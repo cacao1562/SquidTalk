@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">RandomChat</string>
+
+    <string name="connect">Connected</string>
+    <string name="disconnect">Disconnected, Please check your internet connection</string>
+    <string name="error_connect">Failed to connect</string>
+</resources>
