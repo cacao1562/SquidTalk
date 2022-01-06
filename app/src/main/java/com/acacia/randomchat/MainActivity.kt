@@ -4,10 +4,14 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
+import androidx.navigation.findNavController
+import com.acacia.randomchat.databinding.ActivityMainBinding
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
@@ -19,33 +23,69 @@ class MainActivity : AppCompatActivity() {
 
     private var isConnected = false
 
+    private var mUUID = ""
+
+    private lateinit var binding: ActivityMainBinding
+
+    fun getSocket() = mSocket
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+
+        mUUID = UUID.randomUUID().toString()
 
         mSocket = RandomChatApplication.instance.getSocket()
-        mSocket!!.on("connection", onConnect)
-        mSocket!!.on(Socket.EVENT_DISCONNECT, onDisconnect)
-        mSocket!!.on(Socket.EVENT_CONNECT_ERROR, onConnectError)
-        mSocket!!.on("user joined", onUserJoined)
-        mSocket!!.connect()
+        mSocket?.on(Socket.EVENT_CONNECT, onConnect)
+        mSocket?.on(Socket.EVENT_DISCONNECT, onDisconnect)
+        mSocket?.on(Socket.EVENT_CONNECT_ERROR, onConnectError)
+        mSocket?.on("user joined", onUserJoined)
+        mSocket?.on("user searched", onUserSearched)
+        mSocket?.connect()
+
     }
 
     override fun onDestroy() {
         super.onDestroy()
         mSocket?.disconnect()
-
-        mSocket?.off("connection", onConnect)
+        mSocket?.off(Socket.EVENT_CONNECT, onConnect)
         mSocket?.off(Socket.EVENT_DISCONNECT, onDisconnect)
         mSocket?.off(Socket.EVENT_CONNECT_ERROR, onConnectError)
         mSocket?.off("user joined", onUserJoined)
+        mSocket?.off("user searched", onUserSearched)
     }
     private val onConnect = Emitter.Listener {
-        Log.d("yhw", "MainActivity onConnect Listener\n \nby lines 45")
+        Log.d("yhw", "[MainActivity>onConnect] connect successed. [57 lines]")
         CoroutineScope(Dispatchers.Main).launch {
-            mSocket?.emit("addUser", UUID.randomUUID().toString())
+
+            SetNickNameFragment().show(supportFragmentManager, "dialog")
+
             Toast.makeText(applicationContext, R.string.connect, Toast.LENGTH_SHORT).show()
             isConnected = true
+        }
+    }
+    private var doubleBackToExitPressedOnce = false
+
+    private fun pressedBack() {
+        if (doubleBackToExitPressedOnce) {
+            finish()
+            return
+        }
+        doubleBackToExitPressedOnce = true
+        CoroutineScope(Dispatchers.Main).launch {
+            Toast.makeText(applicationContext, "뒤로가기 버튼을 한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+            delay(2000).run {
+                doubleBackToExitPressedOnce = false
+            }
+        }
+    }
+    override fun onBackPressed() {
+        supportFragmentManager.findFragmentById(R.id.nav_host_fragment)?.let {
+            if (it.childFragmentManager.backStackEntryCount == 0) {
+                pressedBack()
+            } else {
+                super.onBackPressed()
+            }
         }
     }
 
@@ -63,18 +103,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val onUserJoined = Emitter.Listener { args ->
+        Log.d("yhw", "[MainActivity>joined] userJoined [106 lines]")
         CoroutineScope(Dispatchers.Main).launch {
             val data = args[0] as JSONObject
             val username: String
             val numUsers: Int
             try {
-                username = data.getString("username")
+                username = data.getString("userName")
                 numUsers = data.getInt("numUsers")
                 Log.d("yhw", "MainActivity userName=$username\n numUsers=$numUsers\nby lines 62")
+                Toast.makeText(applicationContext, "joined name=$username", Toast.LENGTH_SHORT).show()
+
             } catch (e: JSONException) {
+                Log.d("yhw", "[MainActivity>] error=$e [118 lines]")
                 return@launch
             }
         }
     }
 
+    private val onUserSearched = Emitter.Listener { args ->
+        CoroutineScope(Dispatchers.Main).launch {
+            Toast.makeText(applicationContext, "searched", Toast.LENGTH_SHORT).show()
+        }
+    }
 }

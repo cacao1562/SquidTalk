@@ -7,6 +7,6 @@ class Constants {
 //        const val BaseURL = "http://10.0.2.2:3000"
 //        const val BaseURL = "http://192.168.88.125:3000"
 //        const val BaseURL = "http://211.36.142.246:3000"
-        const val BaseURL = "http://10.131.72.184:3000"
+        const val BaseURL = "http://192.168.0.16:3000"
     }
 }
