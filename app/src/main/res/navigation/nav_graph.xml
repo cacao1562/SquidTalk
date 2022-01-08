@@ -2,10 +2,41 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mainFragment">
+    app:startDestination="@id/inputNickNameFragment">
+
+    <fragment
+        android:id="@+id/inputNickNameFragment"
+        android:name="com.acacia.randomchat.InputNickNameFragment"
+        android:label="InputNickNameFragment" >
+        <action
+            android:id="@+id/action_inputNickNameFragment_to_mainFragment"
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/inputNickNameFragment"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
 
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.acacia.randomchat.MainFragment"
-        android:label="MainFragment" />
+        android:label="MainFragment" >
+        <action
+            android:id="@+id/action_mainFragment_to_chatRoomFragment"
+            app:destination="@id/chatRoomFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/chatRoomFragment"
+        android:name="com.acacia.randomchat.ChatRoomFragment"
+        android:label="ChatRoomFragment" >
+        <argument
+            android:name="roomData"
+            app:argType="com.acacia.randomchat.model.RoomData" />
+    </fragment>
 </navigation>

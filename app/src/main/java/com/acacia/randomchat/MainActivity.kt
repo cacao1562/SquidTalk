@@ -7,14 +7,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
 import com.acacia.randomchat.databinding.ActivityMainBinding
+import com.acacia.randomchat.model.RoomData
+import com.acacia.randomchat.model.UserData
+import com.squareup.moshi.Moshi
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.IOException
+import java.lang.Exception
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -41,8 +47,8 @@ class MainActivity : AppCompatActivity() {
         mSocket?.on(Socket.EVENT_CONNECT_ERROR, onConnectError)
         mSocket?.on("user joined", onUserJoined)
         mSocket?.on("user searched", onUserSearched)
+        mSocket?.on("user not searched", onUserNotSearched)
         mSocket?.connect()
-
     }
 
     override fun onDestroy() {
@@ -53,12 +59,14 @@ class MainActivity : AppCompatActivity() {
         mSocket?.off(Socket.EVENT_CONNECT_ERROR, onConnectError)
         mSocket?.off("user joined", onUserJoined)
         mSocket?.off("user searched", onUserSearched)
+        mSocket?.off("user not searched", onUserNotSearched)
     }
+
     private val onConnect = Emitter.Listener {
         Log.d("yhw", "[MainActivity>onConnect] connect successed. [57 lines]")
         CoroutineScope(Dispatchers.Main).launch {
 
-            SetNickNameFragment().show(supportFragmentManager, "dialog")
+//            SetNickNameFragment().show(supportFragmentManager, "dialog")
 
             Toast.makeText(applicationContext, R.string.connect, Toast.LENGTH_SHORT).show()
             isConnected = true
@@ -80,7 +88,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
     override fun onBackPressed() {
-        supportFragmentManager.findFragmentById(R.id.nav_host_fragment)?.let {
+        supportFragmentManager.findFragmentById(R.id.nav_host_container)?.let {
             if (it.childFragmentManager.backStackEntryCount == 0) {
                 pressedBack()
             } else {
@@ -105,6 +113,8 @@ class MainActivity : AppCompatActivity() {
     private val onUserJoined = Emitter.Listener { args ->
         Log.d("yhw", "[MainActivity>joined] userJoined [106 lines]")
         CoroutineScope(Dispatchers.Main).launch {
+            val action = InputNickNameFragmentDirections.actionInputNickNameFragmentToMainFragment()
+            findNavController(R.id.nav_host_container).safeNavigate(action)
             val data = args[0] as JSONObject
             val username: String
             val numUsers: Int
@@ -124,6 +134,41 @@ class MainActivity : AppCompatActivity() {
     private val onUserSearched = Emitter.Listener { args ->
         CoroutineScope(Dispatchers.Main).launch {
             Toast.makeText(applicationContext, "searched", Toast.LENGTH_SHORT).show()
+            val data = args[0] as JSONObject
+            Log.d("yhw", "[MainActivity>on Searched] data=$data [133 lines]")
+            try {
+                val moshi = Moshi.Builder().build()
+                val adapter = moshi.adapter<RoomData>(RoomData::class.java)
+                val roomData = adapter.fromJson(args[0].toString())
+                Log.d("yhw", "[MainActivity>] me=${roomData?.userMe}, you=${roomData?.userYou} [144 lines]")
+                roomData?.let {
+                    val action = MainFragmentDirections.actionMainFragmentToChatRoomFragment(it)
+                    findNavController(R.id.nav_host_container).safeNavigate(action)
+                }
+            }catch (e: IOException) {
+                e.printStackTrace()
+            }catch (e: Exception) {
+                e.printStackTrace()
+            }
+            
+            supportFragmentManager.fragments.forEach { child ->
+                if (child is HomeFragment) {
+                    child.visibleLoading(false)
+                }
+            }
+
         }
     }
+
+    private val onUserNotSearched = Emitter.Listener { args ->
+        CoroutineScope(Dispatchers.Main).launch {
+            Toast.makeText(applicationContext, "user not found.", Toast.LENGTH_SHORT).show()
+            supportFragmentManager.fragments.forEach { child ->
+                if (child is HomeFragment) {
+                    child.visibleLoading(false)
+                }
+            }
+        }
+    }
+
 }

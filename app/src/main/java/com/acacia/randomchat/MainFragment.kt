@@ -10,6 +10,6 @@ class MainFragment: BindingFragment<FragmentMainBinding>(R.layout.fragment_main)
         super.onViewCreated(view, savedInstanceState)
 
         binding.vp2Main.adapter = MainViewPagerAdapter(requireActivity())
-
+        binding.vp2Main.currentItem = 1
     }
 }

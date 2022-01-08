@@ -8,6 +8,8 @@ import android.util.TypedValue
 import android.view.WindowInsets
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.navigation.NavController
+import androidx.navigation.NavDirections
 
 fun showToast(msg: String) {
     Toast.makeText(RandomChatApplication.instance.applicationContext, msg, Toast.LENGTH_SHORT).show()
@@ -30,4 +32,8 @@ fun getScreenWidth(context: Context): Int {
         wm.defaultDisplay.getMetrics(displayMetrics)
         displayMetrics.widthPixels
     }
+}
+
+fun NavController.safeNavigate(direction: NavDirections) {
+    currentDestination?.getAction(direction.actionId)?.run { navigate(direction) }
 }
