@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/inputNickNameFragment"
-        android:name="com.acacia.randomchat.InputNickNameFragment"
+        android:name="com.acacia.randomchat.ui.InputNickNameFragment"
         android:label="InputNickNameFragment" >
         <action
             android:id="@+id/action_inputNickNameFragment_to_mainFragment"
@@ -21,7 +21,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.acacia.randomchat.MainFragment"
+        android:name="com.acacia.randomchat.ui.MainFragment"
         android:label="MainFragment" >
         <action
             android:id="@+id/action_mainFragment_to_chatRoomFragment"
@@ -33,7 +33,7 @@
     </fragment>
     <fragment
         android:id="@+id/chatRoomFragment"
-        android:name="com.acacia.randomchat.ChatRoomFragment"
+        android:name="com.acacia.randomchat.ui.chat.ChatRoomFragment"
         android:label="ChatRoomFragment" >
         <argument
             android:name="roomData"

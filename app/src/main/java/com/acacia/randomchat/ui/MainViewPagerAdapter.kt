@@ -1,4 +1,4 @@
-package com.acacia.randomchat
+package com.acacia.randomchat.ui
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity

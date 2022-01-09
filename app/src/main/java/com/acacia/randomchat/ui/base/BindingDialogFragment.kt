@@ -1,4 +1,4 @@
-package com.acacia.randomchat
+package com.acacia.randomchat.ui.base
 
 import android.os.Bundle
 import android.view.LayoutInflater

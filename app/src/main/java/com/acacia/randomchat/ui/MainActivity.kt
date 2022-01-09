@@ -1,4 +1,4 @@
-package com.acacia.randomchat
+package com.acacia.randomchat.ui
 
 import android.os.Bundle
 import android.util.Log
@@ -6,9 +6,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
+import com.acacia.randomchat.*
 import com.acacia.randomchat.databinding.ActivityMainBinding
 import com.acacia.randomchat.model.RoomData
-import com.acacia.randomchat.model.UserData
 import com.squareup.moshi.Moshi
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
@@ -16,8 +16,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.json.JSONArray
-import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.lang.Exception
@@ -115,19 +113,6 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             val action = InputNickNameFragmentDirections.actionInputNickNameFragmentToMainFragment()
             findNavController(R.id.nav_host_container).safeNavigate(action)
-            val data = args[0] as JSONObject
-            val username: String
-            val numUsers: Int
-            try {
-                username = data.getString("userName")
-                numUsers = data.getInt("numUsers")
-                Log.d("yhw", "MainActivity userName=$username\n numUsers=$numUsers\nby lines 62")
-                Toast.makeText(applicationContext, "joined name=$username", Toast.LENGTH_SHORT).show()
-
-            } catch (e: JSONException) {
-                Log.d("yhw", "[MainActivity>] error=$e [118 lines]")
-                return@launch
-            }
         }
     }
 

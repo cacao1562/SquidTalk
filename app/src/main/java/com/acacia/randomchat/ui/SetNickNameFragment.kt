@@ -1,9 +1,14 @@
-package com.acacia.randomchat
+package com.acacia.randomchat.ui
 
 import android.os.Bundle
 import android.view.View
+import com.acacia.randomchat.Common
+import com.acacia.randomchat.R
 import com.acacia.randomchat.databinding.DialogSetNicknameBinding
+import com.acacia.randomchat.dp2px
+import com.acacia.randomchat.getScreenWidth
 import com.acacia.randomchat.model.UserData
+import com.acacia.randomchat.ui.base.BindingDialogFragment
 import com.squareup.moshi.Moshi
 
 class SetNickNameFragment: BindingDialogFragment<DialogSetNicknameBinding>(R.layout.dialog_set_nickname) {

@@ -1,4 +1,4 @@
-package com.acacia.randomchat
+package com.acacia.randomchat.ui.base
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +8,7 @@ import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import com.acacia.randomchat.ui.MainActivity
 import io.socket.client.Socket
 
 abstract class BindingFragment<T : ViewDataBinding>(
