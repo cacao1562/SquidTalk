@@ -16,7 +16,7 @@
             android:id="@+id/tv_item_me_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="오전 12:11"
+            android:text="@{userMessage.displayDate}"
             android:textSize="10dp"
             android:layout_marginEnd="4dp"
             android:layout_gravity="bottom"

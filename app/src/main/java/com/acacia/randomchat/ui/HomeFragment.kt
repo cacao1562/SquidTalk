@@ -1,5 +1,8 @@
 package com.acacia.randomchat.ui
 
+import android.graphics.drawable.Animatable2
+import android.graphics.drawable.AnimatedVectorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
@@ -20,15 +23,18 @@ class HomeFragment: BindingFragment<FragmentHomeBinding>(R.layout.fragment_home)
             mSocket?.emit("searchUser")
             visibleLoading(true)
         }
+
+        val shape = binding.ivShape.drawable as AnimatedVectorDrawable
+        shape.registerAnimationCallback(object : Animatable2.AnimationCallback() {
+            override fun onAnimationEnd(drawable: Drawable?) {
+                shape.start()
+            }
+        })
+        shape.start()
     }
 
     fun visibleLoading(visible: Boolean) {
         binding.ivDolphine.isVisible = visible
-    }
-
-    override fun onResume() {
-        super.onResume()
-
     }
 
 }

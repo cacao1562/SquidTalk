@@ -1,5 +1,6 @@
 package com.acacia.randomchat
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.os.Build
@@ -10,6 +11,10 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 fun showToast(msg: String) {
     Toast.makeText(RandomChatApplication.instance.applicationContext, msg, Toast.LENGTH_SHORT).show()
@@ -36,4 +41,13 @@ fun getScreenWidth(context: Context): Int {
 
 fun NavController.safeNavigate(direction: NavDirections) {
     currentDestination?.getAction(direction.actionId)?.run { navigate(direction) }
+}
+
+@SuppressLint("SimpleDateFormat")
+fun getTodayDate(): String {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        LocalDateTime.now().format(DateTimeFormatter.ofPattern("a HH:mm"))
+    }else {
+        SimpleDateFormat("a HH:mm").format(Date())
+    }
 }
