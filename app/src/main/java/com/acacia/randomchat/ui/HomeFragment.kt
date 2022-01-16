@@ -15,6 +15,15 @@ class HomeFragment: BindingFragment<FragmentHomeBinding>(R.layout.fragment_home)
     companion object {
         fun newInstance() = HomeFragment()
     }
+    private lateinit var shape: AnimatedVectorDrawable
+
+    private val animationCallback = object : Animatable2.AnimationCallback() {
+        override fun onAnimationEnd(drawable: Drawable?) {
+            binding.ivShape.post {
+                shape.start()
+            }
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -23,18 +32,18 @@ class HomeFragment: BindingFragment<FragmentHomeBinding>(R.layout.fragment_home)
             mSocket?.emit("searchUser")
             visibleLoading(true)
         }
-
-        val shape = binding.ivShape.drawable as AnimatedVectorDrawable
-        shape.registerAnimationCallback(object : Animatable2.AnimationCallback() {
-            override fun onAnimationEnd(drawable: Drawable?) {
-                shape.start()
-            }
-        })
+        shape = binding.ivShape.drawable as AnimatedVectorDrawable
+        shape.registerAnimationCallback(animationCallback)
         shape.start()
     }
 
     fun visibleLoading(visible: Boolean) {
         binding.ivDolphine.isVisible = visible
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        shape.unregisterAnimationCallback(animationCallback)
     }
 
 }

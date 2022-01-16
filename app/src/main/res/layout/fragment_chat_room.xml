@@ -47,10 +47,20 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:minHeight="45dp"
-            android:paddingStart="16dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
+
+            <ImageView
+                android:id="@+id/btn_add_img"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:src="@drawable/ic_add"
+                android:padding="6dp"
+                android:background="@color/black"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
             <EditText
                 android:id="@+id/et_chat_msg"
@@ -63,8 +73,8 @@
                 android:maxLines="3"
                 android:ellipsize="end"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/btn_add_img"
                 app:layout_constraintEnd_toStartOf="@+id/btn_chat_send"/>
 
             <ImageView

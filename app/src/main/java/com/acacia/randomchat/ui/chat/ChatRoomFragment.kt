@@ -1,43 +1,99 @@
 package com.acacia.randomchat.ui.chat
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.acacia.randomchat.R
+import com.acacia.randomchat.api.RanChatRetrofit
 import com.acacia.randomchat.databinding.FragmentChatRoomBinding
 import com.acacia.randomchat.getTodayDate
-import com.acacia.randomchat.model.ChatViewType
-import com.acacia.randomchat.model.UserData
-import com.acacia.randomchat.model.UserMessage
+import com.acacia.randomchat.model.*
 import com.acacia.randomchat.showToast
 import com.acacia.randomchat.ui.base.BindingFragment
+import com.acacia.randomchat.utils.ImageUtil
 import com.acacia.randomchat.utils.KeyboardVisibilityUtils
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import io.socket.emitter.Emitter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.io.File
 import java.io.IOException
 
 
 class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragment_chat_room) {
 
-    private val args: ChatRoomFragmentArgs by navArgs()
+    private val navArgs: ChatRoomFragmentArgs by navArgs()
 
     private lateinit var mAdapter: ChatListAdapter
 
     private lateinit var keyboardVisibilityUtils: KeyboardVisibilityUtils
 
-    var avdRes01: Drawable? = null
-    var avdRes02: Drawable? = null
+    private var avdRes01: Drawable? = null
+    private var avdRes02: Drawable? = null
+
+    private var isUploadSuccess = false
+
+    private val imgChooseLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val intent = result.data
+                if (intent != null) {
+                    val uriList = mutableListOf<Uri>()
+                    /**
+                     * 앨범 이미지
+                     */
+                    intent.clipData?.let { clipData ->
+                        if (clipData.itemCount > 3) {
+                            showToast("이미지는 3장까지 선택할 수 있습니다.")
+                            return@registerForActivityResult
+                        }
+                        // 여러장 선택 했을때
+                        repeat(clipData.itemCount) { idx ->
+                            uriList.add(clipData.getItemAt(idx).uri)
+                        }
+                    }.run {
+                        // 한 장 선택 했을때
+                        intent.data?.let { uri ->
+                            uriList.add(uri)
+                        }
+                    }
+                    callApi(uriList)
+                }else {
+                    /**
+                     * 카메라 촬영 이미지
+                     */
+                    cameraImageURI?.let { uri ->
+                        callApi(listOf(uri))
+                    }
+                }
+            }
+        }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -55,7 +111,7 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
             adapter = mAdapter
         }
 
-        binding.tvChatUserTitle.text = args.roomData.userYou.userName
+        binding.tvChatUserTitle.text = navArgs.roomData.userYou.userName
         binding.btnChatBack.setOnClickListener {
             findNavController().popBackStack()
         }
@@ -66,8 +122,8 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
                 return@setOnClickListener
             }
             Log.d("yhw", "[ChatRoomFragment>onViewCreated] date=${getTodayDate()} [60 lines]")
-            val userMessage = UserMessage(args.roomData.userMe.uuId, msg, ChatViewType.ME)
-            val moshi = Moshi.Builder().build()
+            val userMessage = UserMessage(navArgs.roomData.userMe.uuId, msg, ChatViewType.MSG_ME)
+            val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
             val adapter = moshi.adapter(UserMessage::class.java)
             val jsonData = adapter.toJson(userMessage)
             mSocket?.emit("sendMsg", jsonData)
@@ -76,9 +132,15 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
             scrollBottomMsg()
         }
         mSocket?.on("chat message", onChatMessage)
+        mSocket?.on("chat image", onChatImage)
 
         binding.etChatMsg.addTextChangedListener(inputWatcher)
 
+        binding.btnAddImg.setOnClickListener {
+            getChooseIntent()?.let { intent ->
+                imgChooseLauncher.launch(intent)
+            }
+        }
     }
 
     private val inputWatcher = object : TextWatcher {
@@ -115,6 +177,7 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
             binding.rvChat.scrollToPosition(mAdapter.getDataList().size - 1)
         }
     }
+
     private val onChatMessage = Emitter.Listener { args ->
         CoroutineScope(Dispatchers.Main).launch {
             Log.d("yhw", "[ChatRoomFragment>onChatMessage] args=${args[0]} [49 lines]")
@@ -122,9 +185,8 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
                 val moshi = Moshi.Builder().build()
                 val adapter = moshi.adapter(UserMessage::class.java)
                 val userMessage = adapter.fromJson(args[0].toString())
-                userMessage?.viewType = ChatViewType.YOU
-                showToast("userMessage = ${userMessage?.msg}")
                 userMessage?.let {
+                    it.viewType = ChatViewType.MSG_YOU
                     mAdapter.updateItem(it)
                     scrollBottomMsg()
                 }
@@ -136,14 +198,106 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
         }
     }
 
+    private val onChatImage = Emitter.Listener { args ->
+        CoroutineScope(Dispatchers.Main).launch {
+            Log.d("yhw", "[ChatRoomFragment>onChatImage] args=${args[0]} [203 lines]")
+            try {
+                val moshi = Moshi.Builder().build()
+                val adapter = moshi.adapter(UserImageMessage::class.java)
+                val userImageMessage = adapter.fromJson(args[0].toString())
+                val uuId = navArgs.roomData.userMe.uuId
+                userImageMessage?.let {
+                    it.viewType = if (uuId == it.uuId) ChatViewType.IMG_ME else ChatViewType.IMG_YOU
+                    mAdapter.updateItem(it)
+                    scrollBottomMsg()
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private var cameraImageURI: Uri? = null
+
+    private fun getChooseIntent(): Intent? {
+        return try {
+            val imgFilePath = File.createTempFile("IMG", ".jpg", context?.cacheDir).apply {
+                createNewFile()
+                deleteOnExit()
+            }
+            cameraImageURI = FileProvider.getUriForFile(requireContext(), "${activity?.packageName}.provider", imgFilePath)
+
+            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+                putExtra(MediaStore.EXTRA_OUTPUT, cameraImageURI)
+            }
+
+            val acceptTypes = listOf("image/png", "image/jpg", "image/jpeg", "image/gif")
+            val albumIntent = Intent(Intent.ACTION_GET_CONTENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                type = "image/*"
+                putExtra(Intent.EXTRA_MIME_TYPES, acceptTypes.toTypedArray())
+                putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            }
+
+            Intent.createChooser(albumIntent, "").apply {
+                putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(cameraIntent))
+            }
+        }catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+
+    private fun callApi(listUri: List<Uri>) {
+
+        val params = hashMapOf<String, RequestBody>()
+        params["roomId"] = navArgs.roomData.userMe.roomId.toRequestBody(MultipartBody.FORM)
+        params["uuId"] = navArgs.roomData.userMe.uuId.toRequestBody(MultipartBody.FORM)
+        params["date"] = getTodayDate().toRequestBody(MultipartBody.FORM)
+        val bodys = mutableListOf<MultipartBody.Part>()
+
+        listUri.forEach {
+            val resizedBmp = ImageUtil.getResizeBitmapFromUri(requireContext(), it) ?: return
+            val file = ImageUtil.convertBitmapToFile(requireContext(), resizedBmp)
+            val reqFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+            val body = MultipartBody.Part.createFormData("upload", file.name, reqFile)
+            Log.d("aaa", "body= ${body.body.contentLength()}")
+            bodys.add(body)
+        }
+
+        val call = RanChatRetrofit.getService().uploadImg(bodys.toList(), params)
+        call?.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(
+                call: Call<ResponseBody?>,
+                response: Response<ResponseBody?>
+            ) {
+                if (response.code() == 200) {
+                    response.body()?.string()?.let {
+                        Log.d("ccc", "response body = $it")
+                    }
+                }
+                isUploadSuccess = response.code() == 200
+            }
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                Log.d("ccc", " onFailure = ${t.message}")
+            }
+        })
+
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         Log.d("yhw", "[ChatRoomFragment>onDestroyView]  [23 lines]")
         val moshi = Moshi.Builder().build()
         val adapter = moshi.adapter(UserData::class.java)
-        val jsonData = adapter.toJson(args.roomData.userMe)
+        val jsonData = adapter.toJson(navArgs.roomData.userMe)
         mSocket?.emit("roomLeave", jsonData)
         mSocket?.off("chat message", onChatMessage)
+        mSocket?.off("chat image", onChatImage)
+
         keyboardVisibilityUtils.detachKeyboardListeners()
     }
 

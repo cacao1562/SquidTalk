@@ -1,18 +1,20 @@
 package com.acacia.randomchat.ui.chat
 
+import android.annotation.SuppressLint
+import android.util.Log
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.acacia.randomchat.R
 import com.acacia.randomchat.model.ChatViewType
-import com.acacia.randomchat.model.UserMessage
+import com.acacia.randomchat.model.BaseItemModel
 import com.acacia.randomchat.ui.base.BaseBindingViewHolder
 
-class ChatListAdapter: ListAdapter<UserMessage, BaseBindingViewHolder<*, *>>(DIFF_CALLBACK) {
+class ChatListAdapter: ListAdapter<BaseItemModel, BaseBindingViewHolder<*, *>>(DIFF_CALLBACK) {
 
-    private val dataList = ArrayList<UserMessage>()
+    private val dataList = ArrayList<BaseItemModel>()
 
-    fun updateItem(data: UserMessage) {
+    fun updateItem(data: BaseItemModel) {
         dataList.add(data)
         submitList(dataList)
     }
@@ -20,13 +22,16 @@ class ChatListAdapter: ListAdapter<UserMessage, BaseBindingViewHolder<*, *>>(DIF
     fun getDataList() = dataList
 
     override fun getItemViewType(position: Int): Int {
-        return dataList[position].viewType.ordinal
+        return dataList[position].viewType!!.ordinal
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseBindingViewHolder<*, *> {
+        Log.d("yhw", "[ChatListAdapter>onCreateViewHolder] CreateViewHolder type = ${ChatViewType.values()[viewType]} [29 lines]")
         return when(ChatViewType.values()[viewType]) {
-            ChatViewType.ME -> ChatMeViewHolder(parent, R.layout.item_chat_me)
-            ChatViewType.YOU -> ChatYouViewHolder(parent, R.layout.item_chat_you)
+            ChatViewType.MSG_ME -> ChatMeViewHolder(parent, R.layout.item_chat_msg_me)
+            ChatViewType.MSG_YOU -> ChatYouViewHolder(parent, R.layout.item_chat_msg_you)
+            ChatViewType.IMG_ME -> ChatImageMeViewHolder(parent, R.layout.item_chat_img_me)
+            ChatViewType.IMG_YOU -> ChatImageYouViewHoler(parent, R.layout.item_chat_img_you)
         }
     }
 
@@ -37,12 +42,13 @@ class ChatListAdapter: ListAdapter<UserMessage, BaseBindingViewHolder<*, *>>(DIF
     }
 
     companion object {
-        val DIFF_CALLBACK: DiffUtil.ItemCallback<UserMessage> =
-            object : DiffUtil.ItemCallback<UserMessage>() {
-                override fun areItemsTheSame(oldItem: UserMessage, newItem: UserMessage) =
-                    oldItem.uuid == newItem.uuid
+        val DIFF_CALLBACK: DiffUtil.ItemCallback<BaseItemModel> =
+            object : DiffUtil.ItemCallback<BaseItemModel>() {
+                override fun areItemsTheSame(oldItem: BaseItemModel, newItem: BaseItemModel) =
+                    oldItem.time == newItem.time
 
-                override fun areContentsTheSame(oldItem: UserMessage, newItem: UserMessage) =
+                @SuppressLint("DiffUtilEquals")
+                override fun areContentsTheSame(oldItem: BaseItemModel, newItem: BaseItemModel) =
                     oldItem == newItem
             }
     }
