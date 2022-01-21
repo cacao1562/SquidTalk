@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.acacia.randomchat.R
 import com.acacia.randomchat.api.RanChatRetrofit
 import com.acacia.randomchat.databinding.FragmentChatRoomBinding
+import com.acacia.randomchat.dp2px
 import com.acacia.randomchat.getTodayDate
 import com.acacia.randomchat.model.*
 import com.acacia.randomchat.showToast
@@ -109,6 +110,7 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
             setHasFixedSize(true)
             layoutManager = lm
             adapter = mAdapter
+            addItemDecoration(ChatItemDecoration(dp2px(5f).toInt()))
         }
 
         binding.tvChatUserTitle.text = navArgs.roomData.userYou.userName
@@ -133,6 +135,8 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
         }
         mSocket?.on("chat message", onChatMessage)
         mSocket?.on("chat image", onChatImage)
+        mSocket?.on("user leave", onUserLeave)
+
 
         binding.etChatMsg.addTextChangedListener(inputWatcher)
 
@@ -207,7 +211,15 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
                 val userImageMessage = adapter.fromJson(args[0].toString())
                 val uuId = navArgs.roomData.userMe.uuId
                 userImageMessage?.let {
-                    it.viewType = if (uuId == it.uuId) ChatViewType.IMG_ME else ChatViewType.IMG_YOU
+                    it.viewType = if (uuId == it.uuId) {
+                        if (it.imageNames.size > 1) {
+                            ChatViewType.IMG_ME_MULTI
+                        }else {
+                            ChatViewType.IMG_ME
+                        }
+                    } else {
+                        ChatViewType.IMG_YOU
+                    }
                     mAdapter.updateItem(it)
                     scrollBottomMsg()
                 }
@@ -216,6 +228,13 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+        }
+    }
+
+    private val onUserLeave = Emitter.Listener { args ->
+        CoroutineScope(Dispatchers.Main).launch {
+            Log.d("yhw", "[ChatRoomFragment>onUserLeave] call on user leave [226 lines]")
+            showToast("${navArgs.roomData.userYou.userName} 님이 나가셨습니다.")
         }
     }
 
@@ -297,7 +316,7 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
         mSocket?.emit("roomLeave", jsonData)
         mSocket?.off("chat message", onChatMessage)
         mSocket?.off("chat image", onChatImage)
-
+        mSocket?.off("user leave", onUserLeave)
         keyboardVisibilityUtils.detachKeyboardListeners()
     }
 

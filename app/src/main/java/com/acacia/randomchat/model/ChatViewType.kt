@@ -4,7 +4,8 @@ enum class ChatViewType {
     MSG_ME,
     MSG_YOU,
     IMG_ME,
-    IMG_YOU
+    IMG_ME_MULTI,
+    IMG_YOU,
 }
 
 //sealed class ChatMsgType(val type: ChatViewType) {

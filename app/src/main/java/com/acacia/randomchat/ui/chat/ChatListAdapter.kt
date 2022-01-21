@@ -32,6 +32,7 @@ class ChatListAdapter: ListAdapter<BaseItemModel, BaseBindingViewHolder<*, *>>(D
             ChatViewType.MSG_YOU -> ChatYouViewHolder(parent, R.layout.item_chat_msg_you)
             ChatViewType.IMG_ME -> ChatImageMeViewHolder(parent, R.layout.item_chat_img_me)
             ChatViewType.IMG_YOU -> ChatImageYouViewHoler(parent, R.layout.item_chat_img_you)
+            ChatViewType.IMG_ME_MULTI -> ChatMultiImageMeViewHolder(parent, R.layout.item_chat_img_multi_me)
         }
     }
 

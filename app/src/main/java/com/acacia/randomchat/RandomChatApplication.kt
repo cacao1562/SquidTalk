@@ -15,7 +15,7 @@ class RandomChatApplication: Application() {
         }catch (e: URISyntaxException) {
 //            throw RuntimeException(e)
             Log.d("tag", "error = $e")
-            showToast("socket 연결 실패.")
+//            showToast("socket 연결 실패.")
             null
         }
 

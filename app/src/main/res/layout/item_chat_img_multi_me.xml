@@ -20,43 +20,24 @@
             android:textSize="10dp"
             android:layout_marginEnd="4dp"
             android:layout_gravity="bottom"
-            app:layout_constraintHorizontal_bias="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/cv_item_me_img"
             app:layout_constraintEnd_toStartOf="@+id/cv_item_me_img"/>
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guide_line_start"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintGuide_begin="100dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cv_item_me_img"
-            android:layout_width="wrap_content"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
-            app:layout_constrainedWidth="true"
-            app:layout_constrainedHeight="true"
-            app:layout_constraintHeight_max="450dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="0dp"
             android:layout_marginEnd="5dp"
             android:layout_marginStart="8dp"
-            app:layout_constraintHorizontal_bias="1"
-            app:layout_constraintVertical_bias="0"
-            app:layout_constraintStart_toEndOf="@+id/guide_line_start"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
-            <ImageView
-                android:id="@+id/iv_item_chat_img"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/ll_item_chat_img_multi"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                app:loadImageOrDefault="@{data.imageNames[0]}"/>
+                android:orientation="horizontal" />
         </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
