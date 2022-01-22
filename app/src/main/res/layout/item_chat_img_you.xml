@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             app:layout_constrainedWidth="true"
             app:layout_constrainedHeight="true"
-            app:layout_constraintHeight_max="450dp"
+            app:layout_constraintHeight_max="@dimen/image_max_height"
             app:cardCornerRadius="10dp"
             app:cardElevation="0dp"
             android:layout_marginEnd="5dp"
@@ -50,6 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
+                android:foreground="?selectableItemBackground"
                 app:loadImageOrDefault="@{data.imageNames[0]}" />
 
         </androidx.cardview.widget.CardView>

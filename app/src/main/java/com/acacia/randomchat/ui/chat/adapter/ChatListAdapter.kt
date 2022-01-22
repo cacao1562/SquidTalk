@@ -1,4 +1,4 @@
-package com.acacia.randomchat.ui.chat
+package com.acacia.randomchat.ui.chat.adapter
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -6,9 +6,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.acacia.randomchat.R
-import com.acacia.randomchat.model.ChatViewType
 import com.acacia.randomchat.model.BaseItemModel
+import com.acacia.randomchat.model.ChatViewType
 import com.acacia.randomchat.ui.base.BaseBindingViewHolder
+import com.acacia.randomchat.ui.chat.viewholder.*
 
 class ChatListAdapter: ListAdapter<BaseItemModel, BaseBindingViewHolder<*, *>>(DIFF_CALLBACK) {
 
@@ -33,6 +34,7 @@ class ChatListAdapter: ListAdapter<BaseItemModel, BaseBindingViewHolder<*, *>>(D
             ChatViewType.IMG_ME -> ChatImageMeViewHolder(parent, R.layout.item_chat_img_me)
             ChatViewType.IMG_YOU -> ChatImageYouViewHoler(parent, R.layout.item_chat_img_you)
             ChatViewType.IMG_ME_MULTI -> ChatMultiImageMeViewHolder(parent, R.layout.item_chat_img_multi_me)
+            ChatViewType.IMG_YOU_MULTI -> ChatMultiImageYouViewHolder(parent, R.layout.item_chat_img_multi_you)
         }
     }
 

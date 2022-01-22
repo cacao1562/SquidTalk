@@ -10,19 +10,18 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:foreground="?selectableItemBackground">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/iv_chat_item"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+        <com.github.chrisbanes.photoview.PhotoView
+            android:id="@+id/iv_item_slide"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             app:loadImageOrDefault="@{data}"
-            android:scaleType="centerCrop"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

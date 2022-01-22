@@ -37,7 +37,9 @@
                 android:id="@+id/ll_item_chat_img_multi"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" />
+                android:orientation="horizontal"
+                android:divider="@drawable/divider_image"
+                android:showDividers="middle"/>
         </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,7 @@
 package com.acacia.randomchat.ui.chat
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
@@ -26,6 +27,7 @@ import com.acacia.randomchat.getTodayDate
 import com.acacia.randomchat.model.*
 import com.acacia.randomchat.showToast
 import com.acacia.randomchat.ui.base.BindingFragment
+import com.acacia.randomchat.ui.chat.adapter.ChatListAdapter
 import com.acacia.randomchat.utils.ImageUtil
 import com.acacia.randomchat.utils.KeyboardVisibilityUtils
 import com.squareup.moshi.Moshi
@@ -96,8 +98,19 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
             }
         }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        Log.d("yhw", "[ChatRoomFragment>onAttach]  [103 lines]")
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.d("yhw", "[ChatRoomFragment>onCreate] bundle=$savedInstanceState [108 lines]")
+    }
+    
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d("yhw", "[ChatRoomFragment>onViewCreated] bundle=$savedInstanceState [115 lines]")
         avdRes01 = ContextCompat.getDrawable(requireContext(), R.drawable.avd_text_send)
         avdRes02 = ContextCompat.getDrawable(requireContext(), R.drawable.avd_text_send_reverse)
         keyboardVisibilityUtils = KeyboardVisibilityUtils(requireActivity().window, {
@@ -211,14 +224,23 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
                 val userImageMessage = adapter.fromJson(args[0].toString())
                 val uuId = navArgs.roomData.userMe.uuId
                 userImageMessage?.let {
-                    it.viewType = if (uuId == it.uuId) {
-                        if (it.imageNames.size > 1) {
-                            ChatViewType.IMG_ME_MULTI
-                        }else {
-                            ChatViewType.IMG_ME
+//                    it.viewType = if (uuId == it.uuId) {
+//                        if (it.imageNames.size > 1) {
+//                            ChatViewType.IMG_ME_MULTI
+//                        }else {
+//                            ChatViewType.IMG_ME
+//                        }
+//                    } else {
+//                        ChatViewType.IMG_YOU
+//                    }
+                    it.viewType = when {
+                        (uuId == it.uuId && it.imageNames.size > 1) -> ChatViewType.IMG_ME_MULTI
+                        uuId == it.uuId -> ChatViewType.IMG_ME
+                        (uuId != it.uuId && it.imageNames.size > 1) -> ChatViewType.IMG_YOU_MULTI
+                        uuId != it.uuId -> ChatViewType.IMG_YOU
+                        else -> {
+                            error("")
                         }
-                    } else {
-                        ChatViewType.IMG_YOU
                     }
                     mAdapter.updateItem(it)
                     scrollBottomMsg()
@@ -307,9 +329,45 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
         })
 
     }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        Log.d("yhw", "[ChatRoomFragment>onViewStateRestored] bundle=$savedInstanceState [338 lines]")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d("yhw", "[ChatRoomFragment>onStart]  [338 lines]")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("yhw", "[ChatRoomFragment>onResume]  [343 lines]")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("yhw", "[ChatRoomFragment>onPause]  [348 lines]")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("yhw", "[ChatRoomFragment>onStop]  [358 lines]")
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Log.d("yhw", "[ChatRoomFragment>onSaveInstanceState] bundle=$outState [363 lines]")
+    }
+    
     override fun onDestroyView() {
         super.onDestroyView()
         Log.d("yhw", "[ChatRoomFragment>onDestroyView]  [23 lines]")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("yhw", "[ChatRoomFragment>onDestroy]  [381 lines]")
         val moshi = Moshi.Builder().build()
         val adapter = moshi.adapter(UserData::class.java)
         val jsonData = adapter.toJson(navArgs.roomData.userMe)
@@ -320,4 +378,8 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
         keyboardVisibilityUtils.detachKeyboardListeners()
     }
 
+    override fun onDetach() {
+        super.onDetach()
+        Log.d("yhw", "[ChatRoomFragment>onDetach]  [386 lines]")
+    }
 }

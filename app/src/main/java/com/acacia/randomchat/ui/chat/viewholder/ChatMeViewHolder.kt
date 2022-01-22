@@ -1,15 +1,15 @@
-package com.acacia.randomchat.ui.chat
+package com.acacia.randomchat.ui.chat.viewholder
 
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
-import com.acacia.randomchat.databinding.ItemChatMsgYouBinding
+import com.acacia.randomchat.databinding.ItemChatMsgMeBinding
 import com.acacia.randomchat.model.UserMessage
 import com.acacia.randomchat.ui.base.BaseBindingViewHolder
 
-class ChatYouViewHolder constructor(
+class ChatMeViewHolder constructor(
     parent: ViewGroup,
     @LayoutRes layoutRes: Int
-): BaseBindingViewHolder<UserMessage, ItemChatMsgYouBinding>(parent, layoutRes) {
+): BaseBindingViewHolder<UserMessage, ItemChatMsgMeBinding>(parent, layoutRes) {
 
     override fun bind(obj: UserMessage) {
         binding.userMessage = obj
