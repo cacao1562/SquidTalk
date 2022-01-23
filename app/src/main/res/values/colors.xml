@@ -10,4 +10,7 @@
     <color name="mint">#31B1B1</color>
     <color name="slide_dime">#5E434343</color>
 
+    <color name="dialog_cancel">#34343D</color>
+    <color name="dialog_leave">#DE5257</color>
+
 </resources>

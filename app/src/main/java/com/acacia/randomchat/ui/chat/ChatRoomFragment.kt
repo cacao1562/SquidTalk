@@ -12,6 +12,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -28,6 +29,7 @@ import com.acacia.randomchat.model.*
 import com.acacia.randomchat.showToast
 import com.acacia.randomchat.ui.base.BindingFragment
 import com.acacia.randomchat.ui.chat.adapter.ChatListAdapter
+import com.acacia.randomchat.ui.dialog.RoomLeaveDialog
 import com.acacia.randomchat.utils.ImageUtil
 import com.acacia.randomchat.utils.KeyboardVisibilityUtils
 import com.squareup.moshi.Moshi
@@ -98,16 +100,23 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
             }
         }
 
+    private lateinit var backPressedCallback: OnBackPressedCallback
     override fun onAttach(context: Context) {
         super.onAttach(context)
         Log.d("yhw", "[ChatRoomFragment>onAttach]  [103 lines]")
+        backPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                showLeavePopup()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(this, backPressedCallback)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d("yhw", "[ChatRoomFragment>onCreate] bundle=$savedInstanceState [108 lines]")
     }
-    
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d("yhw", "[ChatRoomFragment>onViewCreated] bundle=$savedInstanceState [115 lines]")
@@ -128,7 +137,7 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
 
         binding.tvChatUserTitle.text = navArgs.roomData.userYou.userName
         binding.btnChatBack.setOnClickListener {
-            findNavController().popBackStack()
+            showLeavePopup()
         }
         binding.btnChatSend.setOnClickListener {
             val msg = binding.etChatMsg.text.toString()
@@ -292,6 +301,12 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
         }
     }
 
+    private fun showLeavePopup() {
+        val dialog = RoomLeaveDialog.newInstance {
+            findNavController().popBackStack()
+        }
+        dialog.show(childFragmentManager, "leaveRoom")
+    }
 
     private fun callApi(listUri: List<Uri>) {
 

@@ -25,10 +25,12 @@ class ImageSlideActivity: AppCompatActivity() {
 
     private val viewPagerCallback = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
-            repeat(binding.tlImageSlide.tabCount) {
-                binding.tlImageSlide.getTabAt(it)?.customView?.findViewById<FrameLayout>(R.id.fl_tab_item)?.isVisible = false
+            binding.tlImageSlide.post {
+                repeat(binding.tlImageSlide.tabCount) {
+                    binding.tlImageSlide.getTabAt(it)?.customView?.findViewById<FrameLayout>(R.id.fl_tab_item)?.isVisible = false
+                }
+                binding.tlImageSlide.getTabAt(position)?.customView?.findViewById<FrameLayout>(R.id.fl_tab_item)?.isVisible = true
             }
-            binding.tlImageSlide.getTabAt(position)?.customView?.findViewById<FrameLayout>(R.id.fl_tab_item)?.isVisible = true
         }
     }
 
@@ -57,8 +59,9 @@ class ImageSlideActivity: AppCompatActivity() {
             }
         }.attach()
         
+        binding.tlImageSlide.getTabAt(selectedPosition)?.customView?.findViewById<FrameLayout>(R.id.fl_tab_item)?.isVisible = true
         binding.vp2ImageSlide.setCurrentItem(selectedPosition, false)
-        
+
         binding.btnBackImageSlide.setOnClickListener {
             finish()
         }
