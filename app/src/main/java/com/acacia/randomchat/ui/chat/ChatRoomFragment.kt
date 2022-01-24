@@ -12,6 +12,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -38,6 +39,7 @@ import io.socket.emitter.Emitter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import land.sungbin.keyboardbeautify.keyboardBeautify
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -49,6 +51,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.IOException
+import kotlin.math.abs
 
 
 class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragment_chat_room) {
@@ -167,6 +170,13 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
                 imgChooseLauncher.launch(intent)
             }
         }
+
+        requireActivity().keyboardBeautify(
+            binding.root as ViewGroup,
+            binding.viewChatInput,
+            binding.rvChat,
+            binding.etChatMsg
+        )
     }
 
     private val inputWatcher = object : TextWatcher {
@@ -199,7 +209,7 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
     }
 
     private fun scrollBottomMsg() {
-        CoroutineScope(Dispatchers.Main).launch {
+        binding.rvChat.post {
             binding.rvChat.scrollToPosition(mAdapter.getDataList().size - 1)
         }
     }
@@ -233,15 +243,6 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
                 val userImageMessage = adapter.fromJson(args[0].toString())
                 val uuId = navArgs.roomData.userMe.uuId
                 userImageMessage?.let {
-//                    it.viewType = if (uuId == it.uuId) {
-//                        if (it.imageNames.size > 1) {
-//                            ChatViewType.IMG_ME_MULTI
-//                        }else {
-//                            ChatViewType.IMG_ME
-//                        }
-//                    } else {
-//                        ChatViewType.IMG_YOU
-//                    }
                     it.viewType = when {
                         (uuId == it.uuId && it.imageNames.size > 1) -> ChatViewType.IMG_ME_MULTI
                         uuId == it.uuId -> ChatViewType.IMG_ME
@@ -283,7 +284,7 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
                 putExtra(MediaStore.EXTRA_OUTPUT, cameraImageURI)
             }
 
-            val acceptTypes = listOf("image/png", "image/jpg", "image/jpeg", "image/gif")
+            val acceptTypes = listOf("image/png", "image/jpg", "image/jpeg")
             val albumIntent = Intent(Intent.ACTION_GET_CONTENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

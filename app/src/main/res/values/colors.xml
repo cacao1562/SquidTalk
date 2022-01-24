@@ -7,10 +7,20 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="mint">#31B1B1</color>
+<!--    <color name="mint">#00ddcc</color>-->
+<!--    <color name="mint">#00BCD8</color>-->
+    <color name="mint">#00C8E4</color>
     <color name="slide_dime">#5E434343</color>
 
     <color name="dialog_cancel">#34343D</color>
     <color name="dialog_leave">#DE5257</color>
+    <color name="bg_chat">#1F1F1F</color>
+<!--    <color name="bg_chat_nav">#2E2F31</color>-->
+    <color name="bg_chat_nav">#3F4045</color>
+    <color name="chat_text">#D4D4D4</color>
+    <color name="chat_text_me">#222222</color>
+    <color name="chat_date_text">#969696</color>
+
+    <color name="bg_leave_popup">#202126</color>
 
 </resources>

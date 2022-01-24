@@ -40,6 +40,7 @@ class ChatListAdapter: ListAdapter<BaseItemModel, BaseBindingViewHolder<*, *>>(D
 
     override fun onBindViewHolder(holder: BaseBindingViewHolder<*, *>, position: Int) {
         dataList[position].let {
+            Log.d("yhw", "[ChatListAdapter>onBindViewHolder] bind time=${it.time} [43 lines]")
             (holder as BaseBindingViewHolder<Any, *>).bind(it)
         }
     }

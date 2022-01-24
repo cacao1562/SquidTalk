@@ -23,7 +23,7 @@ object DataBindingAdapter {
                         .error(android.R.drawable.stat_notify_error))
                 .into(imageView)
         }else {
-            imageView.setImageResource(android.R.drawable.star_off)
+            imageView.setImageResource(android.R.drawable.ic_menu_gallery)
         }
     }
 
@@ -33,7 +33,7 @@ object DataBindingAdapter {
         if (path != null) {
             val name = (path as String)
             val url = "${Constants.BaseURL}/image/$name"
-            Log.d("yhw", "[DataBindingAdapter>loadImageOrDefault] url=$url [17 lines]")
+            Log.d("yhw", "[DataBindingAdapter>loadImageCrop] Crop url=$url [37 lines]")
             Glide.with(imageView)
                 .load(url)
                 .centerCrop()
@@ -43,7 +43,7 @@ object DataBindingAdapter {
                         .error(android.R.drawable.stat_notify_error))
                 .into(imageView)
         }else {
-            imageView.setImageResource(android.R.drawable.star_off)
+            imageView.setImageResource(android.R.drawable.ic_menu_gallery)
         }
     }
 

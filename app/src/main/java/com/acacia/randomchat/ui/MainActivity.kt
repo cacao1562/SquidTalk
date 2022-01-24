@@ -16,6 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import land.sungbin.keyboardbeautify.keyboardBeautify
 import org.json.JSONObject
 import java.io.IOException
 import java.lang.Exception

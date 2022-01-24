@@ -2,33 +2,47 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <land.sungbin.keyboardbeautify.layout.InsetsAnimationConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/bg_chat">
 
         <LinearLayout
             android:id="@+id/ll_chat_top"
             android:layout_width="0dp"
-            android:layout_height="65dp"
+            android:layout_height="60dp"
             android:orientation="horizontal"
             android:gravity="center_vertical"
+            android:background="@color/bg_chat_nav"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/btn_chat_back"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_btn_speak_now"/>
+                android:padding="16dp"
+                android:src="@drawable/ic_baseline_arrow_back_24"
+                android:foreground="?selectableItemBackground"/>
 
             <TextView
                 android:id="@+id/tv_chat_user_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:textColor="@color/white"
+                android:textSize="17sp"
+                android:ellipsize="end"
+                android:maxLines="1"/>
+
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:textColor="@color/black"
-                android:textSize="17dp"/>
+                android:src="@drawable/ic_baseline_priority_high_24"
+                android:padding="16dp"/>
 
         </LinearLayout>
 
@@ -37,6 +51,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:orientation="vertical"
+            android:background="@color/bg_chat"
             app:layout_constraintTop_toBottomOf="@+id/ll_chat_top"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -45,7 +60,9 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/view_chat_input"
             android:layout_width="0dp"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
+            android:minHeight="45dp"
+            android:background="@drawable/bg_chat_input"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
@@ -55,22 +72,23 @@
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:src="@drawable/ic_add"
-                android:padding="6dp"
+                android:padding="10dp"
                 android:background="@color/black"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
             <EditText
                 android:id="@+id/et_chat_msg"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:minHeight="20dp"
-                android:layout_marginEnd="14dp"
+                android:minHeight="45dp"
+                android:padding="10dp"
                 android:background="@null"
-                android:textSize="14dp"
+                android:textColor="@color/white"
+                android:textSize="17sp"
                 android:maxLines="3"
                 android:ellipsize="end"
+                android:textCursorDrawable="@color/mint"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/btn_add_img"
@@ -82,7 +100,8 @@
                 android:layout_height="45dp"
                 android:padding="7dp"
                 android:src="@drawable/avd_text_send"
-                android:background="@color/teal_200"
+                android:background="@color/black"
+                app:tint="@color/white"
                 app:layout_constraintVertical_bias="1"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -91,6 +110,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </land.sungbin.keyboardbeautify.layout.InsetsAnimationConstraintLayout>
 
 </layout>

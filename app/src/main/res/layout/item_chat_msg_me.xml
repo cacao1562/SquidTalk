@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
@@ -10,7 +11,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="5dp">
 
         <TextView
             android:id="@+id/tv_item_me_date"
@@ -18,6 +20,7 @@
             android:layout_height="wrap_content"
             android:text="@{userMessage.displayDate}"
             android:textSize="10dp"
+            android:textColor="@color/chat_date_text"
             android:layout_marginEnd="4dp"
             android:layout_gravity="bottom"
             app:layout_constraintHorizontal_bias="1"
@@ -40,16 +43,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constrainedWidth="true"
-            android:padding="5dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingStart="9dp"
+            android:paddingEnd="15dp"
             android:textSize="16dp"
             android:text="@{userMessage.msg}"
+            android:textColor="@color/chat_text_me"
             android:maxLines="12"
             android:ellipsize="end"
+            android:background="@drawable/bg_chat_msg_right"
+            android:backgroundTint="@color/mint"
             app:layout_constraintHorizontal_bias="1"
             app:layout_constraintStart_toEndOf="@+id/guide_line_1"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="RtlSymmetry" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -18,18 +18,20 @@ class ChatMultiImageMeViewHolder constructor(
     override fun bind(obj: UserImageMessage) {
         binding.data = obj
         val size = (300 / obj.imageNames.size).toFloat()
-        obj.imageNames.forEachIndexed { index, str ->
-            val item = ChatImageItem(binding.root.context).apply {
-                setItem(str, dp2px(size).toInt())
-            }
-            item.setOnClickListener {
-                Intent(binding.root.context, ImageSlideActivity::class.java).also {
-                    it.putExtra(ImageSlideActivity.KEY_IMAGES, obj.imageNames.toTypedArray())
-                    it.putExtra(ImageSlideActivity.KEY_POSITION, index)
-                    binding.root.context.startActivity(it)
+        binding.root.post {
+            obj.imageNames.forEachIndexed { index, str ->
+                val item = ChatImageItem(binding.root.context).apply {
+                    setItem(str, dp2px(size).toInt())
                 }
+                item.setOnClickListener {
+                    Intent(binding.root.context, ImageSlideActivity::class.java).also {
+                        it.putExtra(ImageSlideActivity.KEY_IMAGES, obj.imageNames.toTypedArray())
+                        it.putExtra(ImageSlideActivity.KEY_POSITION, index)
+                        binding.root.context.startActivity(it)
+                    }
+                }
+                binding.llItemChatImgMulti.addView(item)
             }
-            binding.llItemChatImgMulti.addView(item)
         }
     }
 
