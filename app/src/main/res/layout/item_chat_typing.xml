@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_item_you_profile"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/bg_chat"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_squid_circle"/>
+        </androidx.cardview.widget.CardView>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="8dp"
+            android:paddingStart="6dp"
+            android:background="@drawable/bg_chat_msg_left"
+            android:backgroundTint="@color/bg_chat_nav"
+            android:gravity="center"
+            app:layout_constraintTop_toTopOf="@+id/cv_item_you_profile"
+            app:layout_constraintStart_toEndOf="@+id/cv_item_you_profile"
+            tools:ignore="RtlSymmetry">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:layout_width="80dp"
+                android:layout_height="25dp"
+                android:padding="2dp"
+                app:lottie_fileName="typing.json"
+                app:lottie_loop="true"
+                app:lottie_autoPlay="true"/>
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

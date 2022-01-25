@@ -12,7 +12,7 @@
                 android:name="path_3"
                 android:pathData="M 1.53 12.001 C 1.53 6.218 6.218 1.53 12.001 1.53 C 17.782 1.53 22.47 6.218 22.47 12.001 C 22.47 17.782 17.782 22.47 12.001 22.47 C 6.218 22.47 1.53 17.782 1.53 12.001 Z"
                 android:strokeColor="#222222"
-                android:strokeWidth="1"/>
+                android:strokeWidth="1.2"/>
         </vector>
     </aapt:attr>
     <target android:name="path_3">

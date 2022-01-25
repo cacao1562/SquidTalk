@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.DialogFragment
+import com.acacia.randomchat.R
 import com.acacia.randomchat.databinding.DialogRoomLeaveBinding
 
 class RoomLeaveDialog: DialogFragment() {
@@ -48,6 +49,7 @@ class RoomLeaveDialog: DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+//        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
         return dialog
     }
 

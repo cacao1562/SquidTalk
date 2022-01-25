@@ -20,6 +20,17 @@ class ChatListAdapter: ListAdapter<BaseItemModel, BaseBindingViewHolder<*, *>>(D
         submitList(dataList)
     }
 
+    fun insertTyping(data: BaseItemModel) {
+        dataList.add(data)
+        submitList(dataList)
+    }
+
+    fun removeTyping() {
+        val index = dataList.indexOfFirst { it.viewType == ChatViewType.TYPING }
+        dataList.removeAt(index)
+        submitList(dataList)
+    }
+
     fun getDataList() = dataList
 
     override fun getItemViewType(position: Int): Int {
@@ -35,6 +46,7 @@ class ChatListAdapter: ListAdapter<BaseItemModel, BaseBindingViewHolder<*, *>>(D
             ChatViewType.IMG_YOU -> ChatImageYouViewHoler(parent, R.layout.item_chat_img_you)
             ChatViewType.IMG_ME_MULTI -> ChatMultiImageMeViewHolder(parent, R.layout.item_chat_img_multi_me)
             ChatViewType.IMG_YOU_MULTI -> ChatMultiImageYouViewHolder(parent, R.layout.item_chat_img_multi_you)
+            ChatViewType.TYPING -> ChatTypingViewHolder(parent, R.layout.item_chat_typing)
         }
     }
 

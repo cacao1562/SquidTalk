@@ -12,7 +12,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -39,7 +38,6 @@ import io.socket.emitter.Emitter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import land.sungbin.keyboardbeautify.keyboardBeautify
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -51,7 +49,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.IOException
-import kotlin.math.abs
 
 
 class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragment_chat_room) {
@@ -161,6 +158,8 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
         mSocket?.on("chat message", onChatMessage)
         mSocket?.on("chat image", onChatImage)
         mSocket?.on("user leave", onUserLeave)
+        mSocket?.on("chat typing", onTyping)
+        mSocket?.on("chat not typing", onNotTyping)
 
 
         binding.etChatMsg.addTextChangedListener(inputWatcher)
@@ -171,12 +170,6 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
             }
         }
 
-        requireActivity().keyboardBeautify(
-            binding.root as ViewGroup,
-            binding.viewChatInput,
-            binding.rvChat,
-            binding.etChatMsg
-        )
     }
 
     private val inputWatcher = object : TextWatcher {
@@ -191,12 +184,14 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
                 val icon = binding.btnChatSend.drawable as AnimatedVectorDrawable
                 isStart = false
                 icon.start()
+                mSocket?.emit("not typing")
             }else {
                 if (isStart) return
                 binding.btnChatSend.setImageDrawable(avdRes01)
                 val icon = binding.btnChatSend.drawable as AnimatedVectorDrawable
                 isStart = true
                 icon.start()
+                mSocket?.emit("typing")
             }
 
         }
@@ -267,6 +262,21 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
         CoroutineScope(Dispatchers.Main).launch {
             Log.d("yhw", "[ChatRoomFragment>onUserLeave] call on user leave [226 lines]")
             showToast("${navArgs.roomData.userYou.userName} 님이 나가셨습니다.")
+        }
+    }
+
+    private val onTyping = Emitter.Listener { args ->
+        CoroutineScope(Dispatchers.Main).launch {
+            Log.d("yhw", "[ChatRoomFragment>onTyping]  [271 lines]")
+            mAdapter.insertTyping(UserTyping(ChatViewType.TYPING))
+            scrollBottomMsg()
+        }
+    }
+
+    private val onNotTyping = Emitter.Listener { args ->
+        CoroutineScope(Dispatchers.Main).launch {
+            Log.d("yhw", "[ChatRoomFragment>onNotTyping]  [278 lines]")
+            mAdapter.removeTyping()
         }
     }
 
@@ -391,6 +401,9 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
         mSocket?.off("chat message", onChatMessage)
         mSocket?.off("chat image", onChatImage)
         mSocket?.off("user leave", onUserLeave)
+        mSocket?.off("chat typing", onTyping)
+        mSocket?.off("chat not typing", onNotTyping)
+
         keyboardVisibilityUtils.detachKeyboardListeners()
     }
 

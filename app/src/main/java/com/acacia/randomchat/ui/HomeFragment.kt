@@ -5,25 +5,18 @@ import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
 import com.acacia.randomchat.R
 import com.acacia.randomchat.databinding.FragmentHomeBinding
 import com.acacia.randomchat.ui.base.BindingFragment
+import com.acacia.randomchat.ui.dialog.LoadingDialog
 
 class HomeFragment: BindingFragment<FragmentHomeBinding>(R.layout.fragment_home) {
 
     companion object {
         fun newInstance() = HomeFragment()
     }
-    private lateinit var shape: AnimatedVectorDrawable
 
-    private val animationCallback = object : Animatable2.AnimationCallback() {
-        override fun onAnimationEnd(drawable: Drawable?) {
-            binding.ivShape.post {
-                shape.start()
-            }
-        }
-    }
+    private lateinit var mDialog: LoadingDialog
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -32,18 +25,16 @@ class HomeFragment: BindingFragment<FragmentHomeBinding>(R.layout.fragment_home)
             mSocket?.emit("searchUser")
             visibleLoading(true)
         }
-        shape = binding.ivShape.drawable as AnimatedVectorDrawable
-        shape.registerAnimationCallback(animationCallback)
-        shape.start()
+
+        mDialog = LoadingDialog.newInstance()
     }
 
     fun visibleLoading(visible: Boolean) {
-        binding.ivDolphine.isVisible = visible
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        shape.unregisterAnimationCallback(animationCallback)
+        if (visible) {
+            mDialog.show(childFragmentManager, "loading")
+        }else {
+            mDialog.dismiss()
+        }
     }
 
 }

@@ -16,7 +16,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import land.sungbin.keyboardbeautify.keyboardBeautify
 import org.json.JSONObject
 import java.io.IOException
 import java.lang.Exception
@@ -123,6 +122,11 @@ class MainActivity : AppCompatActivity() {
             val data = args[0] as JSONObject
             Log.d("yhw", "[MainActivity>on Searched] data=$data [133 lines]")
             try {
+                supportFragmentManager.fragments.forEach { child ->
+                    if (child is HomeFragment) {
+                        child.visibleLoading(false)
+                    }
+                }
                 val moshi = Moshi.Builder().build()
                 val adapter = moshi.adapter<RoomData>(RoomData::class.java)
                 val roomData = adapter.fromJson(args[0].toString())
@@ -135,12 +139,6 @@ class MainActivity : AppCompatActivity() {
                 e.printStackTrace()
             }catch (e: Exception) {
                 e.printStackTrace()
-            }
-            
-            supportFragmentManager.fragments.forEach { child ->
-                if (child is HomeFragment) {
-                    child.visibleLoading(false)
-                }
             }
 
         }
