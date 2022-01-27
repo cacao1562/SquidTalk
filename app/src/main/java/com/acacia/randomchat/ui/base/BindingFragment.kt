@@ -30,8 +30,11 @@ abstract class BindingFragment<T : ViewDataBinding>(
         if (activity is MainActivity) {
             _mSocket = (activity as MainActivity).getSocket()
         }
+        onCreateViewInit()
         return binding.root
     }
+
+    open fun onCreateViewInit() {}
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -53,3 +53,19 @@ fun getTodayDate(): String {
 
 fun Fragment.showToast(msg: String) = Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
 fun AppCompatActivity.showToast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+
+fun <T: Any> ifLet(vararg elements: T?, closure: (List<T>) -> Unit) {
+    if (elements.all { it != null }) {
+        closure(elements.filterNotNull())
+    }
+}
+
+fun Int.asEmojiRes(): Int {
+    return when(this) {
+        0 -> R.raw.squid_emoji_1
+        1 -> R.raw.squid_emoji_2
+        2 -> R.raw.squid_emoji_3
+        3 -> R.raw.squid_emoji_4
+        else -> R.raw.squid_emoji_1
+    }
+}

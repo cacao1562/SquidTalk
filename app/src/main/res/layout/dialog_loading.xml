@@ -22,13 +22,24 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <ImageView
-                android:id="@+id/iv_shape"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_gravity="center"
-                android:src="@drawable/avd_shape_loading"
-                app:tint="@color/teal_200" />
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:src="@drawable/squid_man"/>
+                <ImageView
+                    android:id="@+id/iv_shape"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginTop="18dp"
+                    android:layout_marginEnd="1dp"
+                    android:layout_gravity="top|center_horizontal"
+                    android:src="@drawable/avd_shape_loading"
+                    app:tint="@color/white" />
+            </FrameLayout>
 
         </androidx.cardview.widget.CardView>
 

@@ -33,6 +33,7 @@ class LoadingDialog: DialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DialogLoadingBinding.inflate(inflater, container, false)
+        isCancelable = false
         return binding.root
     }
 

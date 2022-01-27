@@ -17,18 +17,17 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.acacia.randomchat.R
+import com.acacia.randomchat.*
 import com.acacia.randomchat.api.RanChatRetrofit
 import com.acacia.randomchat.databinding.FragmentChatRoomBinding
-import com.acacia.randomchat.dp2px
-import com.acacia.randomchat.getTodayDate
 import com.acacia.randomchat.model.*
-import com.acacia.randomchat.showToast
 import com.acacia.randomchat.ui.base.BindingFragment
 import com.acacia.randomchat.ui.chat.adapter.ChatListAdapter
+import com.acacia.randomchat.ui.dialog.EmojiDialog
 import com.acacia.randomchat.ui.dialog.RoomLeaveDialog
 import com.acacia.randomchat.utils.ImageUtil
 import com.acacia.randomchat.utils.KeyboardVisibilityUtils
@@ -115,16 +114,35 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d("yhw", "[ChatRoomFragment>onCreate] bundle=$savedInstanceState [108 lines]")
+        childFragmentManager.setFragmentResultListener(EmojiDialog.KEY_GIF_INDEX, this) { requestKey, bundle ->
+            val index = bundle.getInt("index")
+            Log.d("yhw", "[ChatRoomFragment>onCreateView] index = $index [144 lines]")
+            showToast("selected gif index = $index")
+
+            mAdapter.updateItem(UserEmoji(index.asEmojiRes(), ChatViewType.EMOJI_ME))
+            mSocket?.emit("send emoji", index)
+            scrollBottomMsg()
+        }
     }
+
+    private var isKeyboardUp = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d("yhw", "[ChatRoomFragment>onViewCreated] bundle=$savedInstanceState [115 lines]")
         avdRes01 = ContextCompat.getDrawable(requireContext(), R.drawable.avd_text_send)
         avdRes02 = ContextCompat.getDrawable(requireContext(), R.drawable.avd_text_send_reverse)
-        keyboardVisibilityUtils = KeyboardVisibilityUtils(requireActivity().window, {
+        keyboardVisibilityUtils = KeyboardVisibilityUtils(requireActivity().window, { height ->
             scrollBottomMsg()
+            isKeyboardUp = true
+        }, {
+            isKeyboardUp = false
         })
+
+        binding.btnEmoji.setOnClickListener {
+            EmojiDialog.newInstance().show(childFragmentManager, "emoji")
+        }
+        
         mAdapter = ChatListAdapter()
         val lm = LinearLayoutManager(requireContext())
         lm.stackFromEnd = true
@@ -160,6 +178,7 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
         mSocket?.on("user leave", onUserLeave)
         mSocket?.on("chat typing", onTyping)
         mSocket?.on("chat not typing", onNotTyping)
+        mSocket?.on("chat emoji", onChatEmoji)
 
 
         binding.etChatMsg.addTextChangedListener(inputWatcher)
@@ -180,12 +199,14 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
             if (p0.toString().isNullOrEmpty()) {
+                Log.d("yhw", "[ChatRoomFragment>onTextChanged] onTextChanged isNullOrEmtpy [183 lines]")
                 binding.btnChatSend.setImageDrawable(avdRes02)
                 val icon = binding.btnChatSend.drawable as AnimatedVectorDrawable
                 isStart = false
                 icon.start()
                 mSocket?.emit("not typing")
             }else {
+                Log.d("yhw", "[ChatRoomFragment>onTextChanged] onTextChanged p0=$p0 [190 lines]")
                 if (isStart) return
                 binding.btnChatSend.setImageDrawable(avdRes01)
                 val icon = binding.btnChatSend.drawable as AnimatedVectorDrawable
@@ -277,6 +298,15 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
         CoroutineScope(Dispatchers.Main).launch {
             Log.d("yhw", "[ChatRoomFragment>onNotTyping]  [278 lines]")
             mAdapter.removeTyping()
+        }
+    }
+
+    private val onChatEmoji = Emitter.Listener { args ->
+        CoroutineScope(Dispatchers.Main).launch {
+            val index = args[0] as Int
+            Log.d("yhw", "[ChatRoomFragment>onChatEmoji] index=$index [310 lines]")
+            mAdapter.updateItem(UserEmoji(index.asEmojiRes(), ChatViewType.EMOJI_YOU))
+            scrollBottomMsg()
         }
     }
 
@@ -403,6 +433,7 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
         mSocket?.off("user leave", onUserLeave)
         mSocket?.off("chat typing", onTyping)
         mSocket?.off("chat not typing", onNotTyping)
+        mSocket?.off("chat emoji", onChatEmoji)
 
         keyboardVisibilityUtils.detachKeyboardListeners()
     }
