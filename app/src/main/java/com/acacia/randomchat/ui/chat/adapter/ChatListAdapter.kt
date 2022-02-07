@@ -20,11 +20,6 @@ class ChatListAdapter: ListAdapter<BaseItemModel, BaseBindingViewHolder<*, *>>(D
         submitList(dataList)
     }
 
-    fun insertTyping(data: BaseItemModel) {
-        dataList.add(data)
-        submitList(dataList)
-    }
-
     fun removeTyping() {
         val index = dataList.indexOfFirst { it.viewType == ChatViewType.TYPING }
         dataList.removeAt(index)
@@ -49,6 +44,7 @@ class ChatListAdapter: ListAdapter<BaseItemModel, BaseBindingViewHolder<*, *>>(D
             ChatViewType.TYPING -> ChatTypingViewHolder(parent, R.layout.item_chat_typing)
             ChatViewType.EMOJI_ME -> ChatEmojiMeViewHolder(parent, R.layout.item_chat_emoji_me)
             ChatViewType.EMOJI_YOU -> ChatEmojiYouViewHolder(parent, R.layout.item_chat_emoji_you)
+            ChatViewType.NOTICE -> ChatNoticeViewHolder(parent, R.layout.item_chat_notice)
         }
     }
 

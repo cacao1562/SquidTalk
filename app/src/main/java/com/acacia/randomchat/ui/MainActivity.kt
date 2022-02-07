@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import androidx.navigation.findNavController
 import com.acacia.randomchat.*
 import com.acacia.randomchat.databinding.ActivityMainBinding
@@ -46,6 +47,8 @@ class MainActivity : AppCompatActivity() {
         mSocket?.on("user joined", onUserJoined)
         mSocket?.on("user searched", onUserSearched)
         mSocket?.on("user not searched", onUserNotSearched)
+        mSocket?.on("user count", onUserCount)
+
         mSocket?.connect()
     }
 
@@ -58,15 +61,13 @@ class MainActivity : AppCompatActivity() {
         mSocket?.off("user joined", onUserJoined)
         mSocket?.off("user searched", onUserSearched)
         mSocket?.off("user not searched", onUserNotSearched)
+        mSocket?.off("user count", onUserCount)
     }
 
     private val onConnect = Emitter.Listener {
         Log.d("yhw", "[MainActivity>onConnect] connect successed. [57 lines]")
         CoroutineScope(Dispatchers.Main).launch {
-
-//            SetNickNameFragment().show(supportFragmentManager, "dialog")
-
-            Toast.makeText(applicationContext, R.string.connect, Toast.LENGTH_SHORT).show()
+            showToast(getString(R.string.connect))
             isConnected = true
         }
     }
@@ -79,7 +80,7 @@ class MainActivity : AppCompatActivity() {
         }
         doubleBackToExitPressedOnce = true
         CoroutineScope(Dispatchers.Main).launch {
-            Toast.makeText(applicationContext, "뒤로가기 버튼을 한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+            showToast("뒤로가기 버튼을 한 번 더 누르면 종료됩니다.")
             delay(2000).run {
                 doubleBackToExitPressedOnce = false
             }
@@ -98,13 +99,13 @@ class MainActivity : AppCompatActivity() {
     private val onDisconnect = Emitter.Listener {
         CoroutineScope(Dispatchers.Main).launch {
             isConnected = false
-            Toast.makeText(applicationContext, R.string.disconnect, Toast.LENGTH_SHORT).show()
+            showToast(getString(R.string.disconnect))
         }
     }
 
     private val onConnectError = Emitter.Listener {
         CoroutineScope(Dispatchers.Main).launch {
-            Toast.makeText(applicationContext, R.string.error_connect, Toast.LENGTH_SHORT).show()
+            showToast(getString(R.string.error_connect))
         }
     }
 
@@ -118,15 +119,10 @@ class MainActivity : AppCompatActivity() {
 
     private val onUserSearched = Emitter.Listener { args ->
         CoroutineScope(Dispatchers.Main).launch {
-            Toast.makeText(applicationContext, "searched", Toast.LENGTH_SHORT).show()
             val data = args[0] as JSONObject
             Log.d("yhw", "[MainActivity>on Searched] data=$data [133 lines]")
             try {
-                supportFragmentManager.fragments.forEach { child ->
-                    if (child is HomeFragment) {
-                        child.visibleLoading(false)
-                    }
-                }
+                dismissLoading()
                 val moshi = Moshi.Builder().build()
                 val adapter = moshi.adapter<RoomData>(RoomData::class.java)
                 val roomData = adapter.fromJson(args[0].toString())
@@ -146,13 +142,30 @@ class MainActivity : AppCompatActivity() {
 
     private val onUserNotSearched = Emitter.Listener { args ->
         CoroutineScope(Dispatchers.Main).launch {
-            Toast.makeText(applicationContext, "user not found.", Toast.LENGTH_SHORT).show()
+            showToast("대기중인 사용자가 없습니다.")
+            dismissLoading()
+        }
+    }
+
+    private val onUserCount = Emitter.Listener { args ->
+        CoroutineScope(Dispatchers.Main).launch {
+            val count = args[0] as Int
+            Common.userCount = count
+            Log.d("yhw", "[HomeFragment>onUserCount] count=$count [37 lines]")
             supportFragmentManager.fragments.forEach { child ->
                 if (child is HomeFragment) {
-                    child.visibleLoading(false)
+                    child.setUserCount(count)
                 }
             }
         }
     }
 
+    private fun dismissLoading() {
+        supportFragmentManager.fragments.forEach { child ->
+            val loading = child.childFragmentManager.findFragmentByTag("loading")
+            if (loading?.isVisible == true) {
+                (loading as DialogFragment).dismiss()
+            }
+        }
+    }
 }

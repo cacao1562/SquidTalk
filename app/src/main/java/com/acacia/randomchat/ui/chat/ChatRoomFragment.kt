@@ -17,7 +17,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -116,9 +115,6 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
         Log.d("yhw", "[ChatRoomFragment>onCreate] bundle=$savedInstanceState [108 lines]")
         childFragmentManager.setFragmentResultListener(EmojiDialog.KEY_GIF_INDEX, this) { requestKey, bundle ->
             val index = bundle.getInt("index")
-            Log.d("yhw", "[ChatRoomFragment>onCreateView] index = $index [144 lines]")
-            showToast("selected gif index = $index")
-
             mAdapter.updateItem(UserEmoji(index.asEmojiRes(), ChatViewType.EMOJI_ME))
             mSocket?.emit("send emoji", index)
             scrollBottomMsg()
@@ -153,7 +149,10 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
             addItemDecoration(ChatItemDecoration(dp2px(5f).toInt()))
         }
 
-        binding.tvChatUserTitle.text = navArgs.roomData.userYou.userName
+        val userName = navArgs.roomData.userYou.userName
+        binding.tvChatUserTitle.text = userName
+        mAdapter.updateItem(ChatNotice("$userName 님과 연결되었습니다.", ChatViewType.NOTICE))
+
         binding.btnChatBack.setOnClickListener {
             showLeavePopup()
         }
@@ -282,14 +281,15 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
     private val onUserLeave = Emitter.Listener { args ->
         CoroutineScope(Dispatchers.Main).launch {
             Log.d("yhw", "[ChatRoomFragment>onUserLeave] call on user leave [226 lines]")
-            showToast("${navArgs.roomData.userYou.userName} 님이 나가셨습니다.")
+            mAdapter.updateItem(ChatNotice("${navArgs.roomData.userYou.userName} 님이 나가셨습니다.", ChatViewType.NOTICE))
+            scrollBottomMsg()
         }
     }
 
     private val onTyping = Emitter.Listener { args ->
         CoroutineScope(Dispatchers.Main).launch {
             Log.d("yhw", "[ChatRoomFragment>onTyping]  [271 lines]")
-            mAdapter.insertTyping(UserTyping(ChatViewType.TYPING))
+            mAdapter.updateItem(UserTyping(ChatViewType.TYPING))
             scrollBottomMsg()
         }
     }

@@ -16,11 +16,15 @@
     <color name="dialog_leave">#DE5257</color>
     <color name="bg_chat">#1F1F1F</color>
 <!--    <color name="bg_chat_nav">#2E2F31</color>-->
-    <color name="bg_chat_nav">#3F4045</color>
+<!--    <color name="bg_chat_nav">#3F4045</color>-->
+    <color name="bg_chat_nav">#2B2E37</color>
     <color name="chat_text">#D4D4D4</color>
     <color name="chat_text_me">#222222</color>
     <color name="chat_date_text">#969696</color>
 
     <color name="bg_leave_popup">#202126</color>
+    <color name="main">#D84592</color>
+
+    <color name="colorPrimaryDark">#0A0F22</color>
 
 </resources>

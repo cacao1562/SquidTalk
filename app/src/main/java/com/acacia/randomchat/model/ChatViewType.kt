@@ -9,7 +9,8 @@ enum class ChatViewType {
     IMG_YOU_MULTI,
     TYPING,
     EMOJI_ME,
-    EMOJI_YOU
+    EMOJI_YOU,
+    NOTICE
 }
 
 //sealed class ChatMsgType(val type: ChatViewType) {

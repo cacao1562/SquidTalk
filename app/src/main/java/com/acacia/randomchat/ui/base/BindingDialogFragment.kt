@@ -34,4 +34,9 @@ abstract class BindingDialogFragment<T : ViewDataBinding>(
         _binding = null
         super.onDestroyView()
     }
+
+    protected fun binding(action: T.() -> Unit) {
+        binding.run(action)
+    }
+
 }

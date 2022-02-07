@@ -30,7 +30,7 @@
 
         <ImageView
             android:id="@+id/iv_item_chat_emoji"
-            android:layout_width="150dp"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:layout_marginStart="8dp"

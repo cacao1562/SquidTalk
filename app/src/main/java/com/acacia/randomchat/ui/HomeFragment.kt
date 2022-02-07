@@ -1,10 +1,9 @@
 package com.acacia.randomchat.ui
 
-import android.graphics.drawable.Animatable2
-import android.graphics.drawable.AnimatedVectorDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import com.acacia.randomchat.Common
 import com.acacia.randomchat.R
 import com.acacia.randomchat.databinding.FragmentHomeBinding
 import com.acacia.randomchat.ui.base.BindingFragment
@@ -16,25 +15,24 @@ class HomeFragment: BindingFragment<FragmentHomeBinding>(R.layout.fragment_home)
         fun newInstance() = HomeFragment()
     }
 
-    private lateinit var mDialog: LoadingDialog
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.btnSearch.setOnClickListener {
             mSocket?.emit("searchUser")
-            visibleLoading(true)
+            LoadingDialog.newInstance().show(childFragmentManager, "loading")
         }
 
-        mDialog = LoadingDialog.newInstance()
     }
 
-    fun visibleLoading(visible: Boolean) {
-        if (visible) {
-            mDialog.show(childFragmentManager, "loading")
-        }else {
-            mDialog.dismiss()
-        }
+    fun setUserCount(count: Int) {
+        Log.d("yhw", "[HomeFragment>setUserCount] count=$count [35 lines]")
+        binding.tvUserCount.text = "$count 명"
     }
 
+    override fun onResume() {
+        super.onResume()
+        Log.d("yhw", "[HomeFragment>onResume]  [35 lines]")
+        setUserCount(Common.userCount)
+    }
 }
