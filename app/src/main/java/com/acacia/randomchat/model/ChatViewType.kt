@@ -12,10 +12,3 @@ enum class ChatViewType {
     EMOJI_YOU,
     NOTICE
 }
-
-//sealed class ChatMsgType(val type: ChatViewType) {
-//    object MSG_ME: ChatMsgType(ChatViewType.MSG_ME)
-//    object MSG_YOU: ChatMsgType(ChatViewType.MSG_YOU)
-//    object IMG_ME: ChatMsgType(ChatViewType.IMG_ME)
-//    object IMG_YOU: ChatMsgType(ChatViewType.IMG_YOU)
-//}

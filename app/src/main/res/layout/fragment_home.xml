@@ -7,18 +7,41 @@
         android:layout_height="match_parent"
         android:background="@color/colorPrimaryDark">
 
+        <ImageView
+            android:id="@+id/iv_profile"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:transitionName="home"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintTop_toTopOf="@id/tv_home_nickName"
+            app:layout_constraintBottom_toBottomOf="@id/tv_home_nickName"
+            app:layout_constraintEnd_toStartOf="@id/tv_home_nickName"
+            />
+
+        <TextView
+            android:id="@+id/tv_home_nickName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="nickName"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="24dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="16dp"
             android:background="@color/bg_chat_nav"
-            android:layout_marginTop="100dp"
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_profile"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/btn_search">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -47,16 +70,19 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_search"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:text="@string/search"
             android:textStyle="bold"
-            android:textColor="@color/black"
-            android:textSize="18sp"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="23sp"
             app:backgroundTint="@color/main"
-            app:cornerRadius="60dp"
+            app:cornerRadius="75dp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
+            app:strokeColor="@color/mint"
+            app:strokeWidth="3dp"
+            android:stateListAnimator="@animator/anim_press_start"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

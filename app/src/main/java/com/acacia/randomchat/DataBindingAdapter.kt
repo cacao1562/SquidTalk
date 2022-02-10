@@ -93,4 +93,10 @@ object DataBindingAdapter {
         }
     }
 
+    @JvmStatic
+    @BindingAdapter("setProfileShape")
+    fun setProfileShape(imageView: ImageView, any: Any?) {
+        imageView.setImageResource(getShapeDrawable(Common.youShape))
+    }
+
 }

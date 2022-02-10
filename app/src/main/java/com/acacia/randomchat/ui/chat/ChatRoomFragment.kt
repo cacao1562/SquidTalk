@@ -80,7 +80,7 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
                         repeat(clipData.itemCount) { idx ->
                             uriList.add(clipData.getItemAt(idx).uri)
                         }
-                    }.run {
+                    }?:run {
                         // 한 장 선택 했을때
                         intent.data?.let { uri ->
                             uriList.add(uri)
@@ -99,9 +99,9 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
         }
 
     private lateinit var backPressedCallback: OnBackPressedCallback
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        Log.d("yhw", "[ChatRoomFragment>onAttach]  [103 lines]")
         backPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 showLeavePopup()
@@ -116,7 +116,7 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
         childFragmentManager.setFragmentResultListener(EmojiDialog.KEY_GIF_INDEX, this) { requestKey, bundle ->
             val index = bundle.getInt("index")
             mAdapter.updateItem(UserEmoji(index.asEmojiRes(), ChatViewType.EMOJI_ME))
-            mSocket?.emit("send emoji", index)
+            mSocket?.emit(Constants.EMIT_EVENT_EMOJI, index)
             scrollBottomMsg()
         }
     }
@@ -152,7 +152,9 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
         val userName = navArgs.roomData.userYou.userName
         binding.tvChatUserTitle.text = userName
         mAdapter.updateItem(ChatNotice("$userName 님과 연결되었습니다.", ChatViewType.NOTICE))
-
+        Log.d("yhw", "[ChatRoomFragment>onViewCreated] shapeType = ${navArgs.roomData.userYou.shapeType} [156 lines]")
+        Log.d("yhw", "[ChatRoomFragment>onViewCreated] Common shapeType = ${Common.youShape} [156 lines]")
+        Common.youShape = navArgs.roomData.userYou.shapeType
         binding.btnChatBack.setOnClickListener {
             showLeavePopup()
         }
@@ -167,17 +169,17 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
             val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
             val adapter = moshi.adapter(UserMessage::class.java)
             val jsonData = adapter.toJson(userMessage)
-            mSocket?.emit("sendMsg", jsonData)
+            mSocket?.emit(Constants.EMIT_EVENT_MESSAGE, jsonData)
             binding.etChatMsg.setText("")
             mAdapter.updateItem(userMessage)
             scrollBottomMsg()
         }
-        mSocket?.on("chat message", onChatMessage)
-        mSocket?.on("chat image", onChatImage)
-        mSocket?.on("user leave", onUserLeave)
-        mSocket?.on("chat typing", onTyping)
-        mSocket?.on("chat not typing", onNotTyping)
-        mSocket?.on("chat emoji", onChatEmoji)
+        mSocket?.on(Constants.ON_EVENT_MESSAGE, onChatMessage)
+        mSocket?.on(Constants.ON_EVENT_IMAGES, onChatImage)
+        mSocket?.on(Constants.ON_EVENT_TYPING, onTyping)
+        mSocket?.on(Constants.ON_EVENT_NOT_TYPING, onNotTyping)
+        mSocket?.on(Constants.ON_EVENT_EMOJI, onChatEmoji)
+        mSocket?.on(Constants.ON_EVENT_LEAVE_ROOM, onUserLeave)
 
 
         binding.etChatMsg.addTextChangedListener(inputWatcher)
@@ -198,20 +200,18 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
             if (p0.toString().isNullOrEmpty()) {
-                Log.d("yhw", "[ChatRoomFragment>onTextChanged] onTextChanged isNullOrEmtpy [183 lines]")
                 binding.btnChatSend.setImageDrawable(avdRes02)
                 val icon = binding.btnChatSend.drawable as AnimatedVectorDrawable
                 isStart = false
                 icon.start()
-                mSocket?.emit("not typing")
+                mSocket?.emit(Constants.EMIT_EVENT_NOT_TYPING)
             }else {
-                Log.d("yhw", "[ChatRoomFragment>onTextChanged] onTextChanged p0=$p0 [190 lines]")
                 if (isStart) return
                 binding.btnChatSend.setImageDrawable(avdRes01)
                 val icon = binding.btnChatSend.drawable as AnimatedVectorDrawable
                 isStart = true
                 icon.start()
-                mSocket?.emit("typing")
+                mSocket?.emit(Constants.EMIT_EVENT_TYPING)
             }
 
         }
@@ -386,60 +386,22 @@ class ChatRoomFragment: BindingFragment<FragmentChatRoomBinding>(R.layout.fragme
 
     }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        Log.d("yhw", "[ChatRoomFragment>onViewStateRestored] bundle=$savedInstanceState [338 lines]")
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.d("yhw", "[ChatRoomFragment>onStart]  [338 lines]")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d("yhw", "[ChatRoomFragment>onResume]  [343 lines]")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d("yhw", "[ChatRoomFragment>onPause]  [348 lines]")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.d("yhw", "[ChatRoomFragment>onStop]  [358 lines]")
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        Log.d("yhw", "[ChatRoomFragment>onSaveInstanceState] bundle=$outState [363 lines]")
-    }
-    
-    override fun onDestroyView() {
-        super.onDestroyView()
-        Log.d("yhw", "[ChatRoomFragment>onDestroyView]  [23 lines]")
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         Log.d("yhw", "[ChatRoomFragment>onDestroy]  [381 lines]")
+        Common.youShape = 0
         val moshi = Moshi.Builder().build()
         val adapter = moshi.adapter(UserData::class.java)
         val jsonData = adapter.toJson(navArgs.roomData.userMe)
-        mSocket?.emit("roomLeave", jsonData)
-        mSocket?.off("chat message", onChatMessage)
-        mSocket?.off("chat image", onChatImage)
-        mSocket?.off("user leave", onUserLeave)
-        mSocket?.off("chat typing", onTyping)
-        mSocket?.off("chat not typing", onNotTyping)
-        mSocket?.off("chat emoji", onChatEmoji)
+        mSocket?.emit(Constants.EMIT_EVENT_LEAVE_ROOM, jsonData)
+        mSocket?.off(Constants.ON_EVENT_MESSAGE, onChatMessage)
+        mSocket?.off(Constants.ON_EVENT_IMAGES, onChatImage)
+        mSocket?.off(Constants.ON_EVENT_TYPING, onTyping)
+        mSocket?.off(Constants.ON_EVENT_NOT_TYPING, onNotTyping)
+        mSocket?.off(Constants.ON_EVENT_EMOJI, onChatEmoji)
+        mSocket?.off(Constants.ON_EVENT_LEAVE_ROOM, onUserLeave)
 
         keyboardVisibilityUtils.detachKeyboardListeners()
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        Log.d("yhw", "[ChatRoomFragment>onDetach]  [386 lines]")
-    }
 }

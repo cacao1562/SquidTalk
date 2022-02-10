@@ -9,8 +9,8 @@
         android:name="com.acacia.randomchat.ui.InputNickNameFragment"
         android:label="InputNickNameFragment" >
         <action
-            android:id="@+id/action_inputNickNameFragment_to_mainFragment"
-            app:destination="@id/mainFragment"
+            android:id="@+id/action_inputNickNameFragment_to_characterFragment"
+            app:destination="@id/characterFragment"
             app:popUpTo="@id/inputNickNameFragment"
             app:popUpToInclusive="true"
             app:enterAnim="@anim/slide_in_right"
@@ -20,23 +20,40 @@
     </fragment>
 
     <fragment
-        android:id="@+id/mainFragment"
-        android:name="com.acacia.randomchat.ui.MainFragment"
-        android:label="MainFragment" >
-        <action
-            android:id="@+id/action_mainFragment_to_chatRoomFragment"
-            app:destination="@id/chatRoomFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
-    </fragment>
-    <fragment
         android:id="@+id/chatRoomFragment"
         android:name="com.acacia.randomchat.ui.chat.ChatRoomFragment"
         android:label="ChatRoomFragment" >
         <argument
             android:name="roomData"
             app:argType="com.acacia.randomchat.model.RoomData" />
+    </fragment>
+    <fragment
+        android:id="@+id/characterFragment"
+        android:name="com.acacia.randomchat.ui.CharacterFragment"
+        android:label="CharacterFragment" >
+        <action
+            android:id="@+id/action_characterFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/characterFragment"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.acacia.randomchat.ui.HomeFragment"
+        android:label="HomeFragment" >
+        <argument
+            android:name="shape"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_homeFragment_to_chatRoomFragment"
+            app:destination="@id/chatRoomFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
 </navigation>

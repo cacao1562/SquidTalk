@@ -2,20 +2,20 @@ package com.acacia.randomchat
 
 import android.app.Application
 import android.util.Log
+import android.widget.Toast
 import io.socket.client.IO
 import io.socket.client.Socket
-import java.lang.RuntimeException
 import java.net.URISyntaxException
 
 class RandomChatApplication: Application() {
 
     private val mSocket: Socket? =
         try {
+            IO.Options().reconnection
             IO.socket(Constants.BaseURL)
         }catch (e: URISyntaxException) {
-//            throw RuntimeException(e)
             Log.d("tag", "error = $e")
-//            showToast("socket 연결 실패.")
+            Toast.makeText(this, "socket 연결 실패.", Toast.LENGTH_LONG)
             null
         }
 

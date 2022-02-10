@@ -3,4 +3,4 @@
     android:fromXDelta="100%"
     android:toXDelta="0%"
     android:duration="300"
-    android:interpolator="@android:anim/decelerate_interpolator" />
+    android:interpolator="@anim/spring_interpolator" />

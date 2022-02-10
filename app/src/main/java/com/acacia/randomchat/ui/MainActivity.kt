@@ -2,7 +2,6 @@ package com.acacia.randomchat.ui
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
@@ -44,24 +43,24 @@ class MainActivity : AppCompatActivity() {
         mSocket?.on(Socket.EVENT_CONNECT, onConnect)
         mSocket?.on(Socket.EVENT_DISCONNECT, onDisconnect)
         mSocket?.on(Socket.EVENT_CONNECT_ERROR, onConnectError)
-        mSocket?.on("user joined", onUserJoined)
-        mSocket?.on("user searched", onUserSearched)
-        mSocket?.on("user not searched", onUserNotSearched)
-        mSocket?.on("user count", onUserCount)
+        mSocket?.on(Constants.ON_EVENT_JOINED, onUserJoined)
+        mSocket?.on(Constants.ON_EVENT_USER_FOUND, onUserSearched)
+        mSocket?.on(Constants.ON_EVENT_USER_NOT_FOUND, onUserNotSearched)
+        mSocket?.on(Constants.ON_EVENT_USER_COUNT, onUserCount)
 
         mSocket?.connect()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mSocket?.disconnect()
         mSocket?.off(Socket.EVENT_CONNECT, onConnect)
         mSocket?.off(Socket.EVENT_DISCONNECT, onDisconnect)
         mSocket?.off(Socket.EVENT_CONNECT_ERROR, onConnectError)
-        mSocket?.off("user joined", onUserJoined)
-        mSocket?.off("user searched", onUserSearched)
-        mSocket?.off("user not searched", onUserNotSearched)
-        mSocket?.off("user count", onUserCount)
+        mSocket?.off(Constants.ON_EVENT_JOINED, onUserJoined)
+        mSocket?.off(Constants.ON_EVENT_USER_FOUND, onUserSearched)
+        mSocket?.off(Constants.ON_EVENT_USER_NOT_FOUND, onUserNotSearched)
+        mSocket?.off(Constants.ON_EVENT_USER_COUNT, onUserCount)
+        mSocket?.disconnect()
     }
 
     private val onConnect = Emitter.Listener {
@@ -112,7 +111,7 @@ class MainActivity : AppCompatActivity() {
     private val onUserJoined = Emitter.Listener { args ->
         Log.d("yhw", "[MainActivity>joined] userJoined [106 lines]")
         CoroutineScope(Dispatchers.Main).launch {
-            val action = InputNickNameFragmentDirections.actionInputNickNameFragmentToMainFragment()
+            val action = InputNickNameFragmentDirections.actionInputNickNameFragmentToCharacterFragment()
             findNavController(R.id.nav_host_container).safeNavigate(action)
         }
     }
@@ -128,7 +127,7 @@ class MainActivity : AppCompatActivity() {
                 val roomData = adapter.fromJson(args[0].toString())
                 Log.d("yhw", "[MainActivity>] me=${roomData?.userMe}, you=${roomData?.userYou} [144 lines]")
                 roomData?.let {
-                    val action = MainFragmentDirections.actionMainFragmentToChatRoomFragment(it)
+                    val action = HomeFragmentDirections.actionHomeFragmentToChatRoomFragment(it)
                     findNavController(R.id.nav_host_container).safeNavigate(action)
                 }
             }catch (e: IOException) {
@@ -153,8 +152,10 @@ class MainActivity : AppCompatActivity() {
             Common.userCount = count
             Log.d("yhw", "[HomeFragment>onUserCount] count=$count [37 lines]")
             supportFragmentManager.fragments.forEach { child ->
-                if (child is HomeFragment) {
-                    child.setUserCount(count)
+                child.childFragmentManager.fragments.forEach {
+                    if (it is HomeFragment) {
+                        it.setUserCount(count)
+                    }
                 }
             }
         }
@@ -162,9 +163,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun dismissLoading() {
         supportFragmentManager.fragments.forEach { child ->
-            val loading = child.childFragmentManager.findFragmentByTag("loading")
-            if (loading?.isVisible == true) {
-                (loading as DialogFragment).dismiss()
+            child.childFragmentManager.fragments.forEach {
+                val loading = it.childFragmentManager.findFragmentByTag("loading")
+                if (loading?.isVisible == true) {
+                    (loading as DialogFragment).dismiss()
+                }
             }
         }
     }

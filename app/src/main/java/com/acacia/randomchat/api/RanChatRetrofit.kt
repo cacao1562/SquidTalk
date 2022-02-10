@@ -9,10 +9,6 @@ import java.util.concurrent.TimeUnit
 
 object RanChatRetrofit {
 
-    //    val BaseUrl = "http://221.149.225.95:80/" //이전 주소
-    val BaseUrl = "http://192.168.0.11:3333/"
-    //var BaseUrl = "http://192.168.0.85:8080/"
-
     private val interceptor = HttpLoggingInterceptor().apply {
         if (BuildConfig.DEBUG) level = (HttpLoggingInterceptor.Level.BODY)
     }
