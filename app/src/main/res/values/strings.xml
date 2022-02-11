@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RandomChat</string>
+    <string name="app_name">오징어톡</string>
 
     <string name="connect">Connected</string>
     <string name="disconnect">Disconnected, Please check your internet connection</string>

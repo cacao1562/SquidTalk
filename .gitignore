@@ -72,17 +72,13 @@ captures/
 # Comment next line if keeping position of elements in Navigation Editor is relevant for you
 .idea/navEditor.xml
 
-# Keystore files
-# Uncomment the following lines if you do not want to check your keystore files in.
-#*.jks
-#*.keystore
 
 # External native build folder generated in Android Studio 2.2 and later
 .externalNativeBuild
 .cxx/
 
 # Google Services (e.g. APIs or Firebase)
-# google-services.json
+google-services.json
 
 # Freeline
 freeline.py
@@ -190,7 +186,7 @@ hs_err_pid*
 *.keystore
 
 # Google Services (e.g. APIs or Firebase)
-# google-services.json
+google-services.json
 
 # Android Patch
 
@@ -266,3 +262,5 @@ fabric.properties
 # End of https://www.toptal.com/developers/gitignore/api/android,kotlin,androidstudio,java
 
 
+*keystore*
+*.pepk

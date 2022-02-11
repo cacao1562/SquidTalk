@@ -5,7 +5,7 @@
     <data>
         <variable
             name="data"
-            type="com.acacia.randomchat.model.UserImageMessage" />
+            type="com.acacia.squidtalk.model.UserImageMessage" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

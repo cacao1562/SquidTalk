@@ -5,7 +5,7 @@
     <data>
         <variable
             name="data"
-            type="com.acacia.randomchat.model.UserEmoji" />
+            type="com.acacia.squidtalk.model.UserEmoji" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

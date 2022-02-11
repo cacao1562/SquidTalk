@@ -4,13 +4,28 @@ plugins {
     id 'kotlin-kapt'
     id "androidx.navigation.safeargs"
     id 'kotlin-parcelize'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
+
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
     compileSdk 31
 
+    signingConfigs {
+        release {
+            storeFile project.rootProject.file('squidtalk_keystore')
+            keyAlias 'squidtalk'
+            keyPassword keystoreProperties['password']
+            storePassword keystoreProperties['password']
+        }
+    }
+
     defaultConfig {
-        applicationId "com.acacia.randomchat"
+        applicationId "com.acacia.squidtalk"
         minSdk 23
         targetSdk 31
         versionCode 1
@@ -20,9 +35,13 @@ android {
     }
 
     buildTypes {
-        release {
+        debug {
             minifyEnabled false
+        }
+        release {
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
@@ -93,5 +112,10 @@ dependencies {
     implementation "com.airbnb.android:lottie:4.2.2"
 
     implementation 'com.github.chrisbanes:PhotoView:2.0.0'
+
+    //firebase
+    implementation platform('com.google.firebase:firebase-bom:29.0.4')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
 
 }

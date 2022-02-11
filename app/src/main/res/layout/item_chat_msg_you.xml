@@ -6,7 +6,7 @@
     <data>
         <variable
             name="userMessage"
-            type="com.acacia.randomchat.model.UserMessage" />
+            type="com.acacia.squidtalk.model.UserMessage" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

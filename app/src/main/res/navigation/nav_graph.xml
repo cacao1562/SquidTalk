@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/inputNickNameFragment"
-        android:name="com.acacia.randomchat.ui.InputNickNameFragment"
+        android:name="com.acacia.squidtalk.ui.InputNickNameFragment"
         android:label="InputNickNameFragment" >
         <action
             android:id="@+id/action_inputNickNameFragment_to_characterFragment"
@@ -21,15 +21,15 @@
 
     <fragment
         android:id="@+id/chatRoomFragment"
-        android:name="com.acacia.randomchat.ui.chat.ChatRoomFragment"
+        android:name="com.acacia.squidtalk.ui.chat.ChatRoomFragment"
         android:label="ChatRoomFragment" >
         <argument
             android:name="roomData"
-            app:argType="com.acacia.randomchat.model.RoomData" />
+            app:argType="com.acacia.squidtalk.model.RoomData" />
     </fragment>
     <fragment
         android:id="@+id/characterFragment"
-        android:name="com.acacia.randomchat.ui.CharacterFragment"
+        android:name="com.acacia.squidtalk.ui.CharacterFragment"
         android:label="CharacterFragment" >
         <action
             android:id="@+id/action_characterFragment_to_homeFragment"
@@ -43,7 +43,7 @@
     </fragment>
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.acacia.randomchat.ui.HomeFragment"
+        android:name="com.acacia.squidtalk.ui.HomeFragment"
         android:label="HomeFragment" >
         <argument
             android:name="shape"
